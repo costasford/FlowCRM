@@ -8,7 +8,9 @@
     "dev": "nodemon server.js",
     "migrate": "npx sequelize-cli db:migrate",
     "seed": "npx sequelize-cli db:seed:all",
-    "reset-db": "npx sequelize-cli db:drop && npx sequelize-cli db:create && npm run migrate && npm run seed"
+    "reset-db": "npx sequelize-cli db:drop && npx sequelize-cli db:create && npm run migrate && npm run seed",
+    "build": "npm run migrate && npm run seed",
+    "railway:start": "npm run build && npm start"
   },
   "dependencies": {
     "express": "^4.18.2",
