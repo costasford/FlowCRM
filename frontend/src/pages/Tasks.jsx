@@ -15,6 +15,8 @@ const Tasks = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [filterStatus, setFilterStatus] = useState('all');
   const [showAddModal, setShowAddModal] = useState(false);
+  const [showViewModal, setShowViewModal] = useState(false);
+  const [selectedTask, setSelectedTask] = useState(null);
   const [formData, setFormData] = useState({
     title: '',
     description: '',
@@ -62,6 +64,11 @@ const Tasks = () => {
       console.error('Failed to create task:', error);
       alert('Failed to create task. Please try again.');
     }
+  };
+
+  const handleViewTask = (task) => {
+    setSelectedTask(task);
+    setShowViewModal(true);
   };
 
   const filteredTasks = tasks.filter(task => {
@@ -217,7 +224,10 @@ const Tasks = () => {
                           Complete
                         </button>
                       )}
-                      <button className="text-blue-600 hover:text-blue-900 text-sm font-medium">
+                      <button 
+                        className="text-blue-600 hover:text-blue-900 text-sm font-medium"
+                        onClick={() => handleViewTask(task)}
+                      >
                         View
                       </button>
                     </div>
@@ -306,6 +316,105 @@ const Tasks = () => {
                   </button>
                 </div>
               </form>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* View Task Modal */}
+      {showViewModal && selectedTask && (
+        <div className="fixed inset-0 z-50 overflow-y-auto">
+          <div className="flex items-center justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
+            <div className="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" onClick={() => setShowViewModal(false)}></div>
+            
+            <div className="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full">
+              <div className="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
+                <h3 className="text-lg leading-6 font-medium text-gray-900 mb-4">Task Details</h3>
+                
+                <div className="space-y-4">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700">Title</label>
+                    <p className="mt-1 text-sm text-gray-900">{selectedTask.title}</p>
+                  </div>
+                  
+                  {selectedTask.description && (
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700">Description</label>
+                      <p className="mt-1 text-sm text-gray-900">{selectedTask.description}</p>
+                    </div>
+                  )}
+                  
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700">Priority</label>
+                      <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getPriorityColor(selectedTask.priority)}`}>
+                        {selectedTask.priority}
+                      </span>
+                    </div>
+                    
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700">Status</label>
+                      <p className="mt-1 text-sm text-gray-900 capitalize">{selectedTask.status}</p>
+                    </div>
+                  </div>
+                  
+                  {selectedTask.dueDate && (
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700">Due Date</label>
+                      <p className="mt-1 text-sm text-gray-900">
+                        {formatDate(selectedTask.dueDate)}
+                      </p>
+                    </div>
+                  )}
+                  
+                  {selectedTask.contact && (
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700">Contact</label>
+                      <p className="mt-1 text-sm text-gray-900">{selectedTask.contact.name}</p>
+                    </div>
+                  )}
+                  
+                  {selectedTask.deal && (
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700">Deal</label>
+                      <p className="mt-1 text-sm text-gray-900">{selectedTask.deal.title}</p>
+                    </div>
+                  )}
+                  
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700">Created</label>
+                    <p className="mt-1 text-sm text-gray-500">
+                      {new Date(selectedTask.createdAt).toLocaleDateString('en-US', {
+                        year: 'numeric',
+                        month: 'long',
+                        day: 'numeric'
+                      })}
+                    </p>
+                  </div>
+                </div>
+              </div>
+              
+              <div className="bg-gray-50 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse">
+                {selectedTask.status !== 'completed' && (
+                  <button
+                    type="button"
+                    className="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-green-600 text-base font-medium text-white hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 sm:ml-3 sm:w-auto sm:text-sm"
+                    onClick={() => {
+                      handleCompleteTask(selectedTask.id);
+                      setShowViewModal(false);
+                    }}
+                  >
+                    Mark Complete
+                  </button>
+                )}
+                <button
+                  type="button"
+                  className="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm"
+                  onClick={() => setShowViewModal(false)}
+                >
+                  Close
+                </button>
+              </div>
             </div>
           </div>
         </div>

@@ -7,6 +7,8 @@ const Contacts = () => {
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
   const [showAddModal, setShowAddModal] = useState(false);
+  const [showViewModal, setShowViewModal] = useState(false);
+  const [selectedContact, setSelectedContact] = useState(null);
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -40,6 +42,11 @@ const Contacts = () => {
       console.error('Failed to create contact:', error);
       alert('Failed to create contact. Please try again.');
     }
+  };
+
+  const handleViewContact = (contact) => {
+    setSelectedContact(contact);
+    setShowViewModal(true);
   };
 
   const filteredContacts = contacts.filter(contact =>
@@ -144,7 +151,10 @@ const Contacts = () => {
                       <div className="text-sm text-gray-500">
                         {contact.phone}
                       </div>
-                      <button className="text-blue-600 hover:text-blue-900 text-sm font-medium">
+                      <button 
+                        className="text-blue-600 hover:text-blue-900 text-sm font-medium"
+                        onClick={() => handleViewContact(contact)}
+                      >
                         View
                       </button>
                     </div>
@@ -232,6 +242,68 @@ const Contacts = () => {
                   </button>
                 </div>
               </form>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* View Contact Modal */}
+      {showViewModal && selectedContact && (
+        <div className="fixed inset-0 z-50 overflow-y-auto">
+          <div className="flex items-center justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
+            <div className="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" onClick={() => setShowViewModal(false)}></div>
+            
+            <div className="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full">
+              <div className="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
+                <h3 className="text-lg leading-6 font-medium text-gray-900 mb-4">Contact Details</h3>
+                
+                <div className="space-y-4">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700">Name</label>
+                    <p className="mt-1 text-sm text-gray-900">{selectedContact.name}</p>
+                  </div>
+                  
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700">Email</label>
+                    <p className="mt-1 text-sm text-gray-900">{selectedContact.email}</p>
+                  </div>
+                  
+                  {selectedContact.phone && (
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700">Phone</label>
+                      <p className="mt-1 text-sm text-gray-900">{selectedContact.phone}</p>
+                    </div>
+                  )}
+                  
+                  {selectedContact.company && (
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700">Company</label>
+                      <p className="mt-1 text-sm text-gray-900">{selectedContact.company.name}</p>
+                    </div>
+                  )}
+                  
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700">Created</label>
+                    <p className="mt-1 text-sm text-gray-500">
+                      {new Date(selectedContact.createdAt).toLocaleDateString('en-US', {
+                        year: 'numeric',
+                        month: 'long',
+                        day: 'numeric'
+                      })}
+                    </p>
+                  </div>
+                </div>
+              </div>
+              
+              <div className="bg-gray-50 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse">
+                <button
+                  type="button"
+                  className="w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 sm:ml-3 sm:w-auto sm:text-sm"
+                  onClick={() => setShowViewModal(false)}
+                >
+                  Close
+                </button>
+              </div>
             </div>
           </div>
         </div>
