@@ -95,7 +95,7 @@ const Dashboard = () => {
   if (loading) {
     return (
       <div className="flex items-center justify-center h-64">
-        <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-primary-600"></div>
+        <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-blue-600"></div>
       </div>
     );
   }
@@ -176,7 +176,7 @@ const Dashboard = () => {
           <h2 className="text-lg font-medium text-gray-900">Recent Tasks</h2>
           <a
             href="/tasks"
-            className="text-sm text-primary-600 hover:text-primary-900"
+            className="text-sm text-blue-600 hover:text-blue-900"
           >
             View all
           </a>
@@ -224,10 +224,10 @@ const Dashboard = () => {
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
           <a
             href="/contacts"
-            className="flex items-center p-3 bg-primary-50 hover:bg-primary-100 rounded-lg transition-colors duration-200"
+            className="flex items-center p-3 bg-blue-50 hover:bg-blue-100 rounded-lg transition-colors duration-200"
           >
-            <UsersIcon className="h-8 w-8 text-primary-600" />
-            <span className="ml-3 text-sm font-medium text-primary-900">Add Contact</span>
+            <UsersIcon className="h-8 w-8 text-blue-600" />
+            <span className="ml-3 text-sm font-medium text-blue-900">Add Contact</span>
           </a>
           <a
             href="/companies"
