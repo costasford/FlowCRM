@@ -364,8 +364,7 @@ export const demoActivities = [
 
 // Demo mode detection
 export const isDemoMode = () => {
-  return import.meta.env.VITE_DEMO_MODE === 'true' || 
-         window.location.hostname.includes('github.io') ||
-         window.location.hostname.includes('netlify.app') ||
-         window.location.hostname.includes('vercel.app');
+  // Only use demo mode when explicitly enabled
+  // Now that we have a real backend, GitHub Pages uses the real API
+  return import.meta.env.VITE_DEMO_MODE === 'true';
 };

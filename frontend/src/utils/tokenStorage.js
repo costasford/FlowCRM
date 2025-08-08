@@ -2,7 +2,7 @@
 // Tokens are now stored in HttpOnly cookies for enhanced security
 // JavaScript cannot access these cookies, so we use API calls to check auth status
 
-const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
+const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:3001/api';
 
 export const tokenStorage = {
   // Check if user is authenticated by making API call

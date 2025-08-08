@@ -57,7 +57,11 @@ const createSmartAPI = (realAPI, demoAPI) => {
 
 // Real API implementations
 const realAuthAPI = {
-  login: (email, password) => api.post('/auth/login', { email, password }),
+  login: (email, password) => {
+    console.log('🚀 Using REAL API for login:', API_BASE_URL);
+    console.log('🔍 Demo mode check:', isDemoMode());
+    return api.post('/auth/login', { email, password });
+  },
   register: (name, email, password) => api.post('/auth/register', { name, email, password }),
   getCurrentUser: () => api.get('/users/me'),
 };
