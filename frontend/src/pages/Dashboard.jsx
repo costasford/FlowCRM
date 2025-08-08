@@ -30,29 +30,43 @@ const Dashboard = () => {
   const [recentDeals, setRecentDeals] = useState([]);
   const [recentActivities, setRecentActivities] = useState([]);
   const [pipelineStats, setPipelineStats] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState({
+    stats: true,
+    tasks: true,
+    contacts: true,
+    deals: true,
+    activities: true,
+    pipeline: true
+  });
 
   useEffect(() => {
     const fetchDashboardData = async () => {
+      // Fetch data in stages for better UX
       try {
-        // Fetch dashboard statistics and recent data
-        const [
-          contactsResponse,
-          pipelineResponse,
-          tasksResponse,
-          companiesResponse,
-          recentContactsResponse,
-          recentDealsResponse,
-          activitiesResponse,
-        ] = await Promise.all([
+        // Fetch stats first (most important)
+        const [contactsResponse, companiesResponse] = await Promise.all([
           contactsAPI.getAll({ limit: 1 }),
+          companiesAPI.getAll({ limit: 1 }),
+        ]);
+        
+        setLoading(prev => ({ ...prev, stats: false }));
+
+        // Fetch pipeline and tasks data
+        const [pipelineResponse, tasksResponse] = await Promise.all([
           dealsAPI.getPipeline(),
           tasksAPI.getDashboard(),
-          companiesAPI.getAll({ limit: 1 }),
+        ]);
+        
+        setLoading(prev => ({ ...prev, pipeline: false, tasks: false }));
+
+        // Fetch recent data last
+        const [recentContactsResponse, recentDealsResponse, activitiesResponse] = await Promise.all([
           contactsAPI.getAll({ limit: 5, sort: 'createdAt', order: 'desc' }),
           dealsAPI.getAll({ limit: 5, sort: 'createdAt', order: 'desc' }),
           activitiesAPI.getTimeline({ limit: 5 }),
         ]);
+        
+        setLoading(prev => ({ ...prev, contacts: false, deals: false, activities: false }));
 
         setStats({
           totalContacts: contactsResponse.pagination?.totalCount || 0,
@@ -71,26 +85,60 @@ const Dashboard = () => {
         setPipelineStats(pipelineResponse.pipeline || []);
       } catch (error) {
         console.error('Failed to fetch dashboard data:', error);
-      } finally {
-        setLoading(false);
+        // Set all loading states to false on error
+        setLoading({
+          stats: false,
+          tasks: false,
+          contacts: false,
+          deals: false,
+          activities: false,
+          pipeline: false
+        });
       }
     };
 
     fetchDashboardData();
   }, []);
 
-  const StatCard = ({ title, value, icon: Icon, color = 'blue', subtitle }) => (
+  const StatCard = ({ title, value, icon: Icon, color = 'blue', subtitle, loading = false }) => (
     <div className="card">
       <div className="flex items-center">
-        <div className={`p-3 rounded-full bg-${color}-100`}>
-          <Icon className={`h-6 w-6 text-${color}-600`} />
+        <div className={`p-3 rounded-full ${loading ? 'bg-gray-200 animate-pulse' : `bg-${color}-100`}`}>
+          {loading ? (
+            <div className="h-6 w-6 bg-gray-300 rounded animate-pulse"></div>
+          ) : (
+            <Icon className={`h-6 w-6 text-${color}-600`} />
+          )}
         </div>
         <div className="ml-4">
           <p className="text-sm font-medium text-gray-600">{title}</p>
-          <p className="text-2xl font-bold text-gray-900">{value}</p>
-          {subtitle && <p className="text-sm text-gray-500">{subtitle}</p>}
+          {loading ? (
+            <div className="h-8 w-16 bg-gray-300 rounded animate-pulse mt-1"></div>
+          ) : (
+            <p className="text-2xl font-bold text-gray-900">{value}</p>
+          )}
+          {subtitle && !loading && (
+            <p className="text-sm text-gray-500">{subtitle}</p>
+          )}
+          {loading && (
+            <div className="h-4 w-12 bg-gray-200 rounded animate-pulse mt-2"></div>
+          )}
         </div>
       </div>
+    </div>
+  );
+
+  const ListSkeleton = ({ items = 5 }) => (
+    <div className="space-y-3">
+      {Array.from({ length: items }, (_, i) => (
+        <div key={i} className="flex items-center space-x-3 animate-pulse">
+          <div className="h-8 w-8 bg-gray-200 rounded-full"></div>
+          <div className="flex-1">
+            <div className="h-4 w-3/4 bg-gray-200 rounded mb-2"></div>
+            <div className="h-3 w-1/2 bg-gray-100 rounded"></div>
+          </div>
+        </div>
+      ))}
     </div>
   );
 
@@ -181,12 +229,14 @@ const Dashboard = () => {
           value={stats.totalContacts}
           icon={UsersIcon}
           color="blue"
+          loading={loading.stats}
         />
         <StatCard
           title="Properties"
           value={stats.totalCompanies}
           icon={BuildingOfficeIcon}
           color="green"
+          loading={loading.stats}
         />
         <StatCard
           title="Active Deals"
@@ -194,11 +244,13 @@ const Dashboard = () => {
           icon={CurrencyDollarIcon}
           color="yellow"
           subtitle={formatCurrency(stats.totalDealValue)}
+          loading={loading.pipeline}
         />
         <StatCard
           title="Pending Tasks"
           value={stats.pendingTasks}
           icon={ClipboardDocumentListIcon}
+          loading={loading.tasks}
           color="purple"
         />
       </div>
