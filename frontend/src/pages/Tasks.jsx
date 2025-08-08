@@ -39,7 +39,9 @@ const Tasks = () => {
 
   const fetchTasks = async () => {
     try {
-      const response = await tasksAPI.getAll();
+      // For agents, only fetch their own tasks if they can't view all
+      const params = canViewAllRecords('tasks') ? {} : { userId };
+      const response = await tasksAPI.getAll(params);
       setTasks(response.tasks || []);
     } catch (error) {
       console.error('Failed to fetch tasks:', error);
@@ -66,13 +68,45 @@ const Tasks = () => {
     e.preventDefault();
     setSubmitError('');
     try {
-      await tasksAPI.create(formData);
-      setShowAddModal(false);
+      if (showEditModal && selectedTask) {
+        await tasksAPI.update(selectedTask.id, formData);
+        setShowEditModal(false);
+      } else {
+        await tasksAPI.create(formData);
+        setShowAddModal(false);
+      }
       setFormData({ title: '', description: '', priority: 'medium', dueDate: '' });
+      setSelectedTask(null);
       fetchTasks();
     } catch (error) {
-      console.error('Failed to create task:', error);
-      setSubmitError(error.userMessage || 'Failed to create task. Please check your input and try again.');
+      console.error('Failed to save task:', error);
+      setSubmitError(error.userMessage || 'Failed to save task. Please check your input and try again.');
+    }
+  };
+
+  const handleEditTask = (task) => {
+    setSelectedTask(task);
+    setFormData({
+      title: task.title || '',
+      description: task.description || '',
+      priority: task.priority || 'medium',
+      dueDate: task.dueDate ? task.dueDate.split('T')[0] : ''
+    });
+    setSubmitError('');
+    setShowEditModal(true);
+  };
+
+  const handleDeleteTask = async (taskId) => {
+    if (!window.confirm('Are you sure you want to delete this task?')) {
+      return;
+    }
+    
+    try {
+      await tasksAPI.delete(taskId);
+      fetchTasks();
+    } catch (error) {
+      console.error('Failed to delete task:', error);
+      alert('Failed to delete task. Please try again.');
     }
   };
 
@@ -145,17 +179,18 @@ const Tasks = () => {
           </p>
         </div>
         <div className="mt-4 sm:mt-0 sm:ml-16 sm:flex-none">
-          <button
-            type="button"
+          <PermissionButton
+            permission={PERMISSIONS.TASKS_CREATE}
             className="btn-primary"
             onClick={() => {
               setSubmitError('');
+              setFormData({ title: '', description: '', priority: 'medium', dueDate: '' });
               setShowAddModal(true);
             }}
           >
             <PlusIcon className="h-4 w-4 mr-2" />
             Create Task
-          </button>
+          </PermissionButton>
         </div>
       </div>
 
@@ -237,12 +272,34 @@ const Tasks = () => {
                           Complete
                         </button>
                       )}
-                      <button 
-                        className="text-blue-600 hover:text-blue-900 text-sm font-medium"
-                        onClick={() => handleViewTask(task)}
-                      >
-                        View
-                      </button>
+                      <div className="flex items-center space-x-2">
+                        <button 
+                          className="text-blue-600 hover:text-blue-900 text-sm font-medium"
+                          onClick={() => handleViewTask(task)}
+                        >
+                          View
+                        </button>
+                        {canEditRecord('tasks', task) && (
+                          <button 
+                            className="text-green-600 hover:text-green-900 text-sm font-medium"
+                            onClick={() => handleEditTask(task)}
+                            title="Edit Task"
+                          >
+                            <PencilIcon className="h-4 w-4" />
+                          </button>
+                        )}
+                        <PermissionGate permission={PERMISSIONS.TASKS_DELETE}>
+                          {canEditRecord('tasks', task) && (
+                            <button 
+                              className="text-red-600 hover:text-red-900 text-sm font-medium"
+                              onClick={() => handleDeleteTask(task.id)}
+                              title="Delete Task"
+                            >
+                              <TrashIcon className="h-4 w-4" />
+                            </button>
+                          )}
+                        </PermissionGate>
+                      </div>
                     </div>
                   </div>
                 </li>
@@ -252,16 +309,21 @@ const Tasks = () => {
         )}
       </div>
 
-      {/* Add Task Modal */}
-      {showAddModal && (
+      {/* Add/Edit Task Modal */}
+      {(showAddModal || showEditModal) && (
         <div className="fixed inset-0 z-50 overflow-y-auto">
           <div className="flex items-center justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
-            <div className="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" onClick={() => setShowAddModal(false)}></div>
+            <div className="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" onClick={() => {
+              setShowAddModal(false);
+              setShowEditModal(false);
+            }}></div>
             
             <div className="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full">
               <form onSubmit={handleSubmit}>
                 <div className="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
-                  <h3 className="text-lg leading-6 font-medium text-gray-900 mb-4">Create New Task</h3>
+                  <h3 className="text-lg leading-6 font-medium text-gray-900 mb-4">
+                    {showEditModal ? 'Edit Task' : 'Create New Task'}
+                  </h3>
                   
                   {submitError && (
                     <div className="mb-4 bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg">
@@ -325,12 +387,17 @@ const Tasks = () => {
                     type="submit"
                     className="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-blue-600 text-base font-medium text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 sm:ml-3 sm:w-auto sm:text-sm"
                   >
-                    Create Task
+                    {showEditModal ? 'Update Task' : 'Create Task'}
                   </button>
                   <button
                     type="button"
                     className="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm"
-                    onClick={() => setShowAddModal(false)}
+                    onClick={() => {
+                      setShowAddModal(false);
+                      setShowEditModal(false);
+                      setSelectedTask(null);
+                      setSubmitError('');
+                    }}
                   >
                     Cancel
                   </button>
