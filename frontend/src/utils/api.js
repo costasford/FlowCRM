@@ -20,24 +20,19 @@ const api = axios.create({
     'Content-Type': 'application/json',
   },
   timeout: 10000, // 10 second timeout for better user experience
+  withCredentials: true, // Include cookies in all requests
 });
 
-// Add token to requests
-api.interceptors.request.use((config) => {
-  const token = tokenStorage.getToken();
-  if (token) {
-    config.headers.Authorization = `Bearer ${token}`;
-  }
-  return config;
-});
+// No need for Authorization header with HttpOnly cookies
+// Cookies are automatically included with withCredentials: true
 
-// Handle auth errors and token cleanup
+// Handle auth errors
 api.interceptors.response.use(
   (response) => response.data,
-  (error) => {
+  async (error) => {
     if (error.response?.status === 401) {
-      // Clear invalid token and redirect to login
-      tokenStorage.removeToken();
+      // Logout to clear cookie on server
+      await tokenStorage.logout();
       
       // Only redirect if not already on login page
       if (window.location.pathname !== '/login') {

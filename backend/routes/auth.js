@@ -91,9 +91,17 @@ router.post('/register', registerValidation, async (req, res) => {
     // Update last login
     await user.update({ lastLoginAt: new Date() });
 
+    // Set HttpOnly cookie
+    res.cookie('authToken', token, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'strict',
+      maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
+      path: '/'
+    });
+
     res.status(201).json({
       message: 'User registered successfully',
-      token,
       user: user.toJSON()
     });
 
@@ -142,9 +150,17 @@ router.post('/login', loginValidation, async (req, res) => {
     // Update last login
     await user.update({ lastLoginAt: new Date() });
 
+    // Set HttpOnly cookie
+    res.cookie('authToken', token, {
+      httpOnly: true,        // Cannot be accessed by JavaScript
+      secure: process.env.NODE_ENV === 'production', // HTTPS only in production
+      sameSite: 'strict',    // CSRF protection
+      maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
+      path: '/'              // Available to entire domain
+    });
+
     res.json({
       message: 'Login successful',
-      token,
       user: user.toJSON()
     });
 
@@ -188,6 +204,21 @@ router.get('/me', async (req, res) => {
       error: 'Invalid token'
     });
   }
+});
+
+// POST /api/auth/logout - Logout user (clear cookie)
+router.post('/logout', (req, res) => {
+  // Clear the authentication cookie
+  res.clearCookie('authToken', {
+    path: '/',
+    httpOnly: true,
+    secure: process.env.NODE_ENV === 'production',
+    sameSite: 'strict'
+  });
+
+  res.json({
+    message: 'Logged out successfully'
+  });
 });
 
 module.exports = router;

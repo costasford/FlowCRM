@@ -19,15 +19,15 @@ export const AuthProvider = ({ children }) => {
   // Check if user is logged in on app start
   useEffect(() => {
     const initializeAuth = async () => {
-      const token = tokenStorage.getToken();
-      if (token) {
-        try {
-          const userData = await authAPI.getCurrentUser();
-          setUser(userData.user);
-        } catch (error) {
-          console.error('Auth initialization failed:', error);
-          tokenStorage.removeToken();
+      try {
+        // Try to get current user (cookie will be included automatically)
+        const userData = await tokenStorage.getCurrentUser();
+        if (userData) {
+          setUser(userData);
         }
+      } catch (error) {
+        console.error('Auth initialization failed:', error);
+        // No need to clear anything - server handles cookie validation
       }
       setLoading(false);
     };
@@ -38,11 +38,9 @@ export const AuthProvider = ({ children }) => {
   const login = async (email, password) => {
     try {
       const response = await authAPI.login(email, password);
-      const { token, user: userData } = response;
+      const { user: userData } = response; // No token in response with cookies
       
-      if (!tokenStorage.setToken(token)) {
-        throw new Error('Failed to save authentication token');
-      }
+      // Cookie is automatically set by server
       setUser(userData);
       
       return { success: true };
@@ -55,19 +53,17 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
-  const logout = () => {
-    tokenStorage.removeToken();
+  const logout = async () => {
+    await tokenStorage.logout(); // Clear cookie on server
     setUser(null);
   };
 
   const register = async (name, email, password) => {
     try {
       const response = await authAPI.register(name, email, password);
-      const { token, user: userData } = response;
+      const { user: userData } = response; // No token in response with cookies
       
-      if (!tokenStorage.setToken(token)) {
-        throw new Error('Failed to save authentication token');
-      }
+      // Cookie is automatically set by server
       setUser(userData);
       
       return { success: true };

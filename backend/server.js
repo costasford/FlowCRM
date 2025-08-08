@@ -43,6 +43,7 @@ const cors = require('cors');
 const helmet = require('helmet');
 const morgan = require('morgan');
 const rateLimit = require('express-rate-limit');
+const cookieParser = require('cookie-parser');
 
 // Import database
 const { sequelize } = require('./models');
@@ -90,6 +91,9 @@ app.use('/api/', limiter);
 
 // Logging
 app.use(morgan('combined'));
+
+// Cookie parsing middleware
+app.use(cookieParser());
 
 // Body parsing middleware
 app.use(express.json({ limit: '10mb' }));
