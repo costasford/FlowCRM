@@ -8,10 +8,17 @@ const router = express.Router();
 // POST /api/setup/database - Initialize complete database
 router.post('/database', async (req, res) => {
   try {
+    const { sequelize } = require('../models');
+    
+    // Drop all tables first
+    await sequelize.drop({ cascade: true });
+    console.log('🗑️ All tables dropped');
+    
+    // Now run the setup
     await setupDatabase();
     res.json({ 
       message: 'Database setup completed successfully',
-      note: 'All tables created and sample data added'
+      note: 'All tables recreated and sample data added'
     });
   } catch (error) {
     console.error('Database setup error:', error);
