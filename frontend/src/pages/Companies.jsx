@@ -71,7 +71,7 @@ const Companies = () => {
         <div className="sm:flex-auto">
           <h1 className="text-2xl font-bold text-gray-900">Properties</h1>
           <p className="mt-2 text-sm text-gray-700">
-            Manage your property companies and real estate firms
+            Manage your properties and real estate holdings
           </p>
         </div>
         <div className="mt-4 sm:mt-0 sm:ml-16 sm:flex-none">

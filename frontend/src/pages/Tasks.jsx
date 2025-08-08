@@ -227,6 +227,20 @@ const Tasks = () => {
             <p className="mt-1 text-sm text-gray-500">
               Get started by creating your first task.
             </p>
+            <div className="mt-6">
+              <PermissionButton
+                permission={PERMISSIONS.TASKS_CREATE}
+                className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+                onClick={() => {
+                  setSubmitError('');
+                  setFormData({ title: '', description: '', priority: 'medium', dueDate: '' });
+                  setShowAddModal(true);
+                }}
+              >
+                <PlusIcon className="h-4 w-4 mr-2" />
+                Create Task
+              </PermissionButton>
+            </div>
           </div>
         ) : (
           <div className="overflow-hidden">

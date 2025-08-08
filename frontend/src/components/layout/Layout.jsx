@@ -19,7 +19,7 @@ import {
 const navigation = [
   { name: 'Dashboard', to: '/', icon: HomeIcon },
   { name: 'Contacts', to: '/contacts', icon: UsersIcon },
-  { name: 'Companies', to: '/companies', icon: BuildingOfficeIcon },
+  { name: 'Properties', to: '/companies', icon: BuildingOfficeIcon },
   { name: 'Deals', to: '/deals', icon: CurrencyDollarIcon },
   { name: 'Tasks', to: '/tasks', icon: ClipboardDocumentListIcon },
   { name: 'Activities', to: '/activities', icon: ClockIcon },
@@ -148,13 +148,13 @@ const Layout = () => {
                     <button
                       onClick={() => {
                         setProfileDropdownOpen(false);
-                        // You can add profile settings functionality here
-                        alert('Profile settings coming soon!');
+                        // Profile settings functionality would go here
                       }}
-                      className="flex items-center w-full px-3 py-2 text-sm text-gray-700 hover:bg-gray-50"
+                      className="flex items-center w-full px-3 py-2 text-sm text-gray-400 cursor-not-allowed"
+                      disabled
                     >
                       <Cog6ToothIcon className="h-4 w-4 mr-2" />
-                      Profile Settings
+                      Profile Settings (Coming Soon)
                     </button>
                     <button
                       onClick={() => {
@@ -204,12 +204,13 @@ const Layout = () => {
                 <button
                   onClick={() => {
                     setProfileDropdownOpen(false);
-                    alert('Profile settings coming soon!');
+                    // Profile settings functionality would go here
                   }}
-                  className="flex items-center w-full px-3 py-2 text-sm text-gray-700 hover:bg-gray-50"
+                  className="flex items-center w-full px-3 py-2 text-sm text-gray-400 cursor-not-allowed"
+                  disabled
                 >
                   <Cog6ToothIcon className="h-4 w-4 mr-2" />
-                  Profile Settings
+                  Profile Settings (Coming Soon)
                 </button>
                 <button
                   onClick={() => {

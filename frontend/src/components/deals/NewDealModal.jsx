@@ -290,7 +290,7 @@ const NewDealModal = ({ isOpen, onClose, onSuccess }) => {
             {/* Company */}
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
-                Property/Company
+                Property
               </label>
               <select
                 name="companyId"

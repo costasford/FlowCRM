@@ -475,28 +475,28 @@ const Dashboard = () => {
             className="flex items-center p-3 bg-blue-50 hover:bg-blue-100 rounded-lg transition-colors duration-200"
           >
             <UsersIcon className="h-8 w-8 text-blue-600" />
-            <span className="ml-3 text-sm font-medium text-blue-900">Add Contact</span>
+            <span className="ml-3 text-sm font-medium text-blue-900">Go to Contacts</span>
           </Link>
           <Link
             to="/companies"
             className="flex items-center p-3 bg-green-50 hover:bg-green-100 rounded-lg transition-colors duration-200"
           >
             <BuildingOfficeIcon className="h-8 w-8 text-green-600" />
-            <span className="ml-3 text-sm font-medium text-green-900">Add Property</span>
+            <span className="ml-3 text-sm font-medium text-green-900">Go to Properties</span>
           </Link>
           <Link
             to="/deals"
             className="flex items-center p-3 bg-yellow-50 hover:bg-yellow-100 rounded-lg transition-colors duration-200"
           >
             <CurrencyDollarIcon className="h-8 w-8 text-yellow-600" />
-            <span className="ml-3 text-sm font-medium text-yellow-900">New Deal</span>
+            <span className="ml-3 text-sm font-medium text-yellow-900">Go to Deals</span>
           </Link>
           <Link
             to="/tasks"
             className="flex items-center p-3 bg-purple-50 hover:bg-purple-100 rounded-lg transition-colors duration-200"
           >
             <ClipboardDocumentListIcon className="h-8 w-8 text-purple-600" />
-            <span className="ml-3 text-sm font-medium text-purple-900">Create Task</span>
+            <span className="ml-3 text-sm font-medium text-purple-900">Go to Tasks</span>
           </Link>
         </div>
       </div>
