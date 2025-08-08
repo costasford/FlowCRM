@@ -20,14 +20,16 @@ export const AuthProvider = ({ children }) => {
   useEffect(() => {
     const initializeAuth = async () => {
       try {
-        // Try to get current user (cookie will be included automatically)
-        const userData = await tokenStorage.getCurrentUser();
-        if (userData) {
-          setUser(userData);
+        if (tokenStorage.hasToken()) {
+          // Try to get current user with token
+          const userData = await authAPI.getCurrentUser();
+          if (userData) {
+            setUser(userData);
+          }
         }
       } catch (error) {
         console.error('Auth initialization failed:', error);
-        // No need to clear anything - server handles cookie validation
+        tokenStorage.removeToken();
       }
       setLoading(false);
     };
@@ -38,9 +40,10 @@ export const AuthProvider = ({ children }) => {
   const login = async (email, password) => {
     try {
       const response = await authAPI.login(email, password);
-      const { user: userData } = response; // No token in response with cookies
+      const { token, user: userData } = response;
       
-      // Cookie is automatically set by server
+      // Store token in localStorage
+      tokenStorage.setToken(token);
       setUser(userData);
       
       return { success: true };
@@ -54,16 +57,17 @@ export const AuthProvider = ({ children }) => {
   };
 
   const logout = async () => {
-    await tokenStorage.logout(); // Clear cookie on server
+    tokenStorage.removeToken();
     setUser(null);
   };
 
   const register = async (name, email, password) => {
     try {
       const response = await authAPI.register(name, email, password);
-      const { user: userData } = response; // No token in response with cookies
+      const { token, user: userData } = response;
       
-      // Cookie is automatically set by server
+      // Store token in localStorage
+      tokenStorage.setToken(token);
       setUser(userData);
       
       return { success: true };

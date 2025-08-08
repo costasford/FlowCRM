@@ -1,73 +1,32 @@
-// HttpOnly Cookie Authentication
-// Tokens are now stored in HttpOnly cookies for enhanced security
-// JavaScript cannot access these cookies, so we use API calls to check auth status
-
-const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:3001/api';
+// Simple localStorage token storage for cross-domain compatibility
 
 export const tokenStorage = {
-  // Check if user is authenticated by making API call
-  // HttpOnly cookies are automatically included in requests
-  checkAuth: async () => {
-    try {
-      const response = await fetch(`${API_BASE_URL}/auth/me`, {
-        method: 'GET',
-        credentials: 'include', // Include cookies in request
-        headers: {
-          'Content-Type': 'application/json'
-        }
-      });
-      return response.ok;
-    } catch (error) {
-      console.error('Failed to check authentication:', error);
-      return false;
-    }
+  getToken: () => localStorage.getItem('authToken'),
+  
+  setToken: (token) => {
+    localStorage.setItem('authToken', token);
+    return true;
   },
-
-  // Get user data (if authenticated)
+  
+  removeToken: () => {
+    localStorage.removeItem('authToken');
+    return true;
+  },
+  
+  hasToken: () => !!localStorage.getItem('authToken'),
+  
+  // For compatibility with existing code
+  checkAuth: () => !!localStorage.getItem('authToken'),
+  
   getCurrentUser: async () => {
-    try {
-      const response = await fetch(`${API_BASE_URL}/auth/me`, {
-        method: 'GET',
-        credentials: 'include',
-        headers: {
-          'Content-Type': 'application/json'
-        }
-      });
-      
-      if (response.ok) {
-        const data = await response.json();
-        return data.user;
-      }
-      return null;
-    } catch (error) {
-      console.error('Failed to get current user:', error);
-      return null;
-    }
+    // This will be handled by the API with Authorization header
+    return null;
   },
-
-  // Logout (clear cookie on server)
+  
   logout: async () => {
-    try {
-      await fetch(`${API_BASE_URL}/auth/logout`, {
-        method: 'POST',
-        credentials: 'include',
-        headers: {
-          'Content-Type': 'application/json'
-        }
-      });
-      return true;
-    } catch (error) {
-      console.error('Failed to logout:', error);
-      // Return true anyway - if logout fails, the server will handle cookie expiration
-      return true;
-    }
-  },
-
-  // Legacy methods for backward compatibility (now no-ops)
-  getToken: () => null,
-  setToken: () => true,
-  removeToken: () => true,
-  hasToken: () => false // Always false since we can't access cookies
+    localStorage.removeItem('authToken');
+    return true;
+  }
 };
 
 // ✅ PRODUCTION SECURITY IMPLEMENTED:

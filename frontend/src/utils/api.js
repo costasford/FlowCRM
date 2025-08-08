@@ -12,8 +12,17 @@ const api = axios.create({
   withCredentials: true, // Include cookies in all requests
 });
 
-// No need for Authorization header with HttpOnly cookies
-// Cookies are automatically included with withCredentials: true
+// Request interceptor - add auth token to requests
+api.interceptors.request.use(
+  (config) => {
+    const token = tokenStorage.getToken();
+    if (token) {
+      config.headers.Authorization = `Bearer ${token}`;
+    }
+    return config;
+  },
+  (error) => Promise.reject(error)
+);
 
 // Professional error handling with user-friendly messages
 const getErrorMessage = (error) => {
@@ -64,8 +73,8 @@ api.interceptors.response.use(
     error.userMessage = getErrorMessage(error);
     
     if (error.response?.status === 401) {
-      // Logout to clear cookie on server
-      await tokenStorage.logout();
+      // Clear token and redirect
+      tokenStorage.removeToken();
       
       // Only redirect if not already on login page
       if (window.location.pathname !== '/FlowCRM/login') {
