@@ -1,0 +1,8 @@
+# Ignore frontend directory - we only deploy backend to Railway
+frontend/
+*.md
+.github/
+.gitignore
+GITHUB_SETUP_INSTRUCTIONS.md
+RAILWAY_DEPLOYMENT.md
+GITHUB_DEPLOYMENT.md
