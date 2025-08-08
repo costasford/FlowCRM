@@ -124,7 +124,7 @@ export const testConnection = async () => {
 export const authAPI = {
   login: (email, password) => api.post('/auth/login', { email, password }),
   register: (name, email, password) => api.post('/auth/register', { name, email, password }),
-  getCurrentUser: () => api.get('/users/me'),
+  getCurrentUser: () => api.get('/auth/me'),
   testConnection,
 };
 

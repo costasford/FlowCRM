@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import { Outlet, Link, useLocation } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
-import DemoModeIndicator from '../common/DemoModeIndicator';
 import {
   HomeIcon,
   UsersIcon,
@@ -159,8 +158,6 @@ const Layout = () => {
         </main>
       </div>
       
-      {/* Demo Mode Indicator */}
-      <DemoModeIndicator />
     </div>
   );
 };

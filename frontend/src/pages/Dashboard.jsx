@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import { tasksAPI, dealsAPI, contactsAPI, activitiesAPI, companiesAPI } from '../utils/api';
 import {
@@ -249,12 +250,12 @@ const Dashboard = () => {
         <div className="card">
           <div className="flex items-center justify-between mb-4">
             <h2 className="text-lg font-medium text-gray-900">Recent Tasks</h2>
-            <a
-              href="/FlowCRM/tasks"
+            <Link
+              to="/tasks"
               className="text-sm text-blue-600 hover:text-blue-900"
             >
               View all
-            </a>
+            </Link>
           </div>
           
           {recentTasks.length === 0 ? (
@@ -297,12 +298,12 @@ const Dashboard = () => {
         <div className="card">
           <div className="flex items-center justify-between mb-4">
             <h2 className="text-lg font-medium text-gray-900">Recent Contacts</h2>
-            <a
-              href="/FlowCRM/contacts"
+            <Link
+              to="/contacts"
               className="text-sm text-blue-600 hover:text-blue-900"
             >
               View all
-            </a>
+            </Link>
           </div>
           
           {recentContacts.length === 0 ? (
@@ -340,12 +341,12 @@ const Dashboard = () => {
         <div className="card">
           <div className="flex items-center justify-between mb-4">
             <h2 className="text-lg font-medium text-gray-900">Recent Deals</h2>
-            <a
-              href="/FlowCRM/deals"
+            <Link
+              to="/deals"
               className="text-sm text-blue-600 hover:text-blue-900"
             >
               View all
-            </a>
+            </Link>
           </div>
           
           {recentDeals.length === 0 ? (
@@ -377,12 +378,12 @@ const Dashboard = () => {
         <div className="card">
           <div className="flex items-center justify-between mb-4">
             <h2 className="text-lg font-medium text-gray-900">Recent Activities</h2>
-            <a
-              href="/FlowCRM/activities"
+            <Link
+              to="/activities"
               className="text-sm text-blue-600 hover:text-blue-900"
             >
               View all
-            </a>
+            </Link>
           </div>
           
           {recentActivities.length === 0 ? (
@@ -420,34 +421,34 @@ const Dashboard = () => {
       <div className="card">
         <h2 className="text-lg font-medium text-gray-900 mb-4">Quick Actions</h2>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-          <a
-            href="/FlowCRM/contacts"
+          <Link
+            to="/contacts"
             className="flex items-center p-3 bg-blue-50 hover:bg-blue-100 rounded-lg transition-colors duration-200"
           >
             <UsersIcon className="h-8 w-8 text-blue-600" />
             <span className="ml-3 text-sm font-medium text-blue-900">Add Contact</span>
-          </a>
-          <a
-            href="/FlowCRM/companies"
+          </Link>
+          <Link
+            to="/companies"
             className="flex items-center p-3 bg-green-50 hover:bg-green-100 rounded-lg transition-colors duration-200"
           >
             <BuildingOfficeIcon className="h-8 w-8 text-green-600" />
             <span className="ml-3 text-sm font-medium text-green-900">Add Property</span>
-          </a>
-          <a
-            href="/FlowCRM/deals"
+          </Link>
+          <Link
+            to="/deals"
             className="flex items-center p-3 bg-yellow-50 hover:bg-yellow-100 rounded-lg transition-colors duration-200"
           >
             <CurrencyDollarIcon className="h-8 w-8 text-yellow-600" />
             <span className="ml-3 text-sm font-medium text-yellow-900">New Deal</span>
-          </a>
-          <a
-            href="/FlowCRM/tasks"
+          </Link>
+          <Link
+            to="/tasks"
             className="flex items-center p-3 bg-purple-50 hover:bg-purple-100 rounded-lg transition-colors duration-200"
           >
             <ClipboardDocumentListIcon className="h-8 w-8 text-purple-600" />
             <span className="ml-3 text-sm font-medium text-purple-900">Create Task</span>
-          </a>
+          </Link>
         </div>
       </div>
     </div>
