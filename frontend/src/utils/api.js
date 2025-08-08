@@ -26,10 +26,54 @@ const api = axios.create({
 // No need for Authorization header with HttpOnly cookies
 // Cookies are automatically included with withCredentials: true
 
+// Professional error handling with user-friendly messages
+const getErrorMessage = (error) => {
+  // Network errors (server unreachable, DNS issues, etc.)
+  if (!error.response) {
+    if (error.code === 'ERR_NETWORK') {
+      return 'Unable to connect to server. Please check your internet connection and try again.';
+    }
+    if (error.code === 'ENOTFOUND' || error.message.includes('ENOTFOUND')) {
+      return 'Server is currently unavailable. Please try again later.';
+    }
+    return 'Network error occurred. Please check your connection and try again.';
+  }
+
+  // HTTP status errors
+  const status = error.response.status;
+  const serverMessage = error.response.data?.error || error.response.data?.message;
+
+  switch (status) {
+    case 400:
+      return serverMessage || 'Invalid request. Please check your input and try again.';
+    case 401:
+      return 'Invalid email or password. Please try again.';
+    case 403:
+      return 'Access denied. You don\'t have permission to perform this action.';
+    case 404:
+      return 'Service not found. Please contact support if this persists.';
+    case 409:
+      return serverMessage || 'Conflict occurred. This resource may already exist.';
+    case 429:
+      return 'Too many requests. Please wait a moment and try again.';
+    case 500:
+      return 'Server error occurred. Please try again or contact support.';
+    case 502:
+    case 503:
+    case 504:
+      return 'Service temporarily unavailable. Please try again in a few minutes.';
+    default:
+      return serverMessage || `Unexpected error (${status}). Please try again or contact support.`;
+  }
+};
+
 // Handle auth errors
 api.interceptors.response.use(
   (response) => response.data,
   async (error) => {
+    // Add user-friendly error message
+    error.userMessage = getErrorMessage(error);
+    
     if (error.response?.status === 401) {
       // Logout to clear cookie on server
       await tokenStorage.logout();
@@ -55,15 +99,34 @@ const createSmartAPI = (realAPI, demoAPI) => {
   });
 };
 
+// Connection test utility
+export const testConnection = async () => {
+  try {
+    const response = await fetch(`${API_BASE_URL}/auth/me`, {
+      method: 'GET',
+      credentials: 'include',
+      headers: { 'Content-Type': 'application/json' }
+    });
+    return {
+      connected: true,
+      status: response.status,
+      message: response.status === 401 ? 'Server is responding (authentication endpoint working)' : 'Server connected successfully'
+    };
+  } catch (error) {
+    return {
+      connected: false,
+      error: getErrorMessage(error),
+      details: error.message
+    };
+  }
+};
+
 // Real API implementations
 const realAuthAPI = {
-  login: (email, password) => {
-    console.log('🚀 Using REAL API for login:', API_BASE_URL);
-    console.log('🔍 Demo mode check:', isDemoMode());
-    return api.post('/auth/login', { email, password });
-  },
+  login: (email, password) => api.post('/auth/login', { email, password }),
   register: (name, email, password) => api.post('/auth/register', { name, email, password }),
   getCurrentUser: () => api.get('/users/me'),
+  testConnection,
 };
 
 const realUsersAPI = {
