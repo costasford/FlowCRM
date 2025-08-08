@@ -9,7 +9,7 @@
     "dev": "vite",
     "build": "vite build",
     "build:demo": "set VITE_DEMO_MODE=true && vite build",
-    "build:production": "set VITE_API_URL=https://flowcrm-production-1465.up.railway.app/api && vite build",
+    "build:production": "set \"VITE_API_URL=https://flowcrm-production-1465.up.railway.app/api\" && vite build",
     "lint": "eslint .",
     "preview": "vite preview",
     "predeploy": "npm run build:production",

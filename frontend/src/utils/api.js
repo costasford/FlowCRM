@@ -208,21 +208,14 @@ const realLeadScoresAPI = {
   delete: (id) => api.delete(`/leadscores/${id}`),
 };
 
-// DEBUG: Check demo mode status at module load
-console.log('🔧 API Module Loading - Demo Mode Status:', isDemoMode());
-console.log('🔧 API Base URL:', API_BASE_URL);
-console.log('🔧 Environment VITE_DEMO_MODE:', import.meta.env.VITE_DEMO_MODE);
-
-// TEMPORARY: Force real API to isolate the issue
-console.log('🚨 FORCING REAL API - BYPASSING SMART PROXY FOR DEBUGGING');
-
-export const authAPI = realAuthAPI;
-export const usersAPI = realUsersAPI;
-export const companiesAPI = realCompaniesAPI;
-export const contactsAPI = realContactsAPI;
-export const dealsAPI = realDealsAPI;
-export const tasksAPI = realTasksAPI;
-export const activitiesAPI = realActivitiesAPI;
-export const leadScoresAPI = realLeadScoresAPI;
+// Export smart APIs that automatically switch between demo and real
+export const authAPI = createSmartAPI(realAuthAPI, demoAuthAPI);
+export const usersAPI = createSmartAPI(realUsersAPI, demoUsersAPI);
+export const companiesAPI = createSmartAPI(realCompaniesAPI, demoCompaniesAPI);
+export const contactsAPI = createSmartAPI(realContactsAPI, demoContactsAPI);
+export const dealsAPI = createSmartAPI(realDealsAPI, demoDealsAPI);
+export const tasksAPI = createSmartAPI(realTasksAPI, demoTasksAPI);
+export const activitiesAPI = createSmartAPI(realActivitiesAPI, demoActivitiesAPI);
+export const leadScoresAPI = createSmartAPI(realLeadScoresAPI, demoLeadScoresAPI);
 
 export default api;
