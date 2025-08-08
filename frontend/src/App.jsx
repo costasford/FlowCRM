@@ -1,5 +1,5 @@
 import React from 'react';
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider } from './contexts/AuthContext';
 import Layout from './components/layout/Layout';
 import Login from './pages/auth/Login';
@@ -32,6 +32,13 @@ function App() {
             <Route path="tasks" element={<Tasks />} />
             <Route path="activities" element={<Activities />} />
           </Route>
+          
+          {/* 404 fallback - redirect to dashboard */}
+          <Route path="*" element={
+            <ProtectedRoute>
+              <Navigate to="/" replace />
+            </ProtectedRoute>
+          } />
         </Routes>
       </Router>
     </AuthProvider>

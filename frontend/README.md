@@ -2,13 +2,11 @@
 
 Modern React frontend for the FlowCRM property management system.
 
-## 🚀 Live Demo
+## 🚀 Live Production App
 
 **[https://costasford.github.io/FlowCRM](https://costasford.github.io/FlowCRM)**
 
-### Demo Account
-- **Email**: demo@flowcrm.com
-- **Password**: password123
+This is a **production-ready CRM application** with real backend authentication. Register a new account or login with existing credentials to access the full system.
 
 ## 🛠️ Technology Stack
 
@@ -22,10 +20,11 @@ Modern React frontend for the FlowCRM property management system.
 ## 🏗️ Architecture
 
 ### Authentication System
-- **HttpOnly Cookies** - Enterprise-grade XSS protection
-- **JWT Tokens** - Secure authentication with automatic refresh
+- **localStorage JWT** - Cross-domain compatible token storage
+- **Bearer Token Authorization** - All API requests include JWT token
 - **Protected Routes** - Route-level access control
 - **Context API** - Centralized auth state management
+- **Cross-Domain Support** - GitHub Pages ↔ Railway architecture
 
 ### Professional Error Handling
 - **Connection Testing** - Real-time server connectivity verification
@@ -33,11 +32,12 @@ Modern React frontend for the FlowCRM property management system.
 - **Network Error Recovery** - Automatic retry functionality
 - **Loading States** - Professional feedback for all operations
 
-### Smart API Layer
-- **Automatic Demo/Production Switching** - Seamless environment handling
+### Production API Layer
+- **Direct Backend Integration** - No demo mode, production-ready
 - **Comprehensive Error Mapping** - User-friendly error messages for all scenarios
-- **CORS Configuration** - Proper cross-origin request handling
+- **CORS Configuration** - GitHub Pages ↔ Railway cross-origin handling
 - **Request Timeouts** - 10-second timeout for better UX
+- **JWT Token Injection** - Automatic Bearer token authorization
 
 ## 📁 Project Structure
 
@@ -86,10 +86,7 @@ npm run build
 # Production build with API configuration
 npm run build:production
 
-# Demo mode build
-npm run build:demo
-
-# Deploy to GitHub Pages
+# Deploy to GitHub Pages (production)
 npm run deploy
 ```
 
@@ -97,8 +94,7 @@ npm run deploy
 
 ### Environment Variables
 
-- `VITE_API_URL` - Backend API base URL
-- `VITE_DEMO_MODE` - Enable demo mode (true/false)
+- `VITE_API_URL` - Backend API base URL (automatically configured)
 
 ### Build Scripts
 
@@ -106,7 +102,13 @@ The build process automatically configures the correct API endpoints:
 
 - **Development**: http://localhost:3001/api
 - **Production**: https://flowcrm-production-1465.up.railway.app/api
-- **Demo Mode**: Uses mock data instead of real API
+
+### Cross-Domain Architecture
+
+- **Frontend**: Hosted on GitHub Pages (`costasford.github.io`)
+- **Backend**: Hosted on Railway (`flowcrm-production-1465.up.railway.app`)
+- **Authentication**: localStorage JWT tokens (cross-domain compatible)
+- **CORS**: Configured for GitHub Pages ↔ Railway communication
 
 ## 🎨 UI/UX Features
 
@@ -125,8 +127,9 @@ The build process automatically configures the correct API endpoints:
 ## 🔐 Security Features
 
 ### Client-side Security
-- **HttpOnly Cookie Authentication** - XSS protection
-- **CORS Compliance** - Proper cross-origin handling
+- **localStorage JWT Authentication** - Cross-domain compatible tokens
+- **Bearer Token Authorization** - Secure API request headers
+- **CORS Compliance** - Proper GitHub Pages ↔ Railway handling
 - **Input Sanitization** - Client-side validation
 - **Secure Route Protection** - Authentication-based navigation
 
@@ -155,22 +158,29 @@ FlowCRM frontend is fully responsive and tested on:
 
 ## 📚 API Integration
 
-### Smart API Layer
-The frontend uses a smart API layer that automatically switches between demo and production modes:
+### Production API Layer
+The frontend integrates directly with the Railway backend:
 
 ```javascript
-// Automatic environment detection
-const api = createSmartAPI(realAPI, demoAPI);
+// Automatic JWT token injection
+api.interceptors.request.use((config) => {
+  const token = tokenStorage.getToken();
+  if (token) {
+    config.headers.Authorization = `Bearer ${token}`;
+  }
+  return config;
+});
 
 // Professional error handling
 error.userMessage // User-friendly error messages
 ```
 
-### Authentication Flow
+### Authentication Flow (Cross-Domain)
 1. User logs in with credentials
-2. Server sets HttpOnly cookie
-3. All subsequent requests include cookie automatically
-4. Client-side auth state managed via Context API
+2. Server returns JWT token
+3. Token stored in localStorage
+4. All subsequent requests include `Authorization: Bearer <token>` header
+5. Client-side auth state managed via Context API
 
 ## 🚀 Deployment
 
@@ -180,9 +190,10 @@ npm run deploy
 ```
 
 This builds the production version and deploys to GitHub Pages with:
-- **Production API URLs**
-- **Optimized assets**
-- **Proper CORS configuration**
+- **Production API URLs** - Railway backend integration
+- **Optimized assets** - Minified JS/CSS bundles
+- **Cross-domain CORS** - GitHub Pages ↔ Railway compatibility
+- **localStorage JWT** - Cross-domain authentication support
 
 ### Alternative Deployment Options
 - **Vercel** - Easy deployment with git integration

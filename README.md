@@ -2,23 +2,16 @@
 
 A modern, full-stack Customer Relationship Management system designed for property management professionals.
 
-**[🌟 Live Demo](https://costasford.github.io/FlowCRM)** - Try it now with demo accounts!
+**[🌟 Live Demo](https://costasford.github.io/FlowCRM)** - Production-ready CRM with real backend!
 
-### 🔐 Demo Account
-| Email | Password | Access Level |
-|--------|----------|-------------|
-| demo@flowcrm.com | password123 | Standard user access |
+### 🔐 Authentication
+This is a **production application** with real user registration and authentication. Create your account to get started:
 
-<details>
-<summary>Additional Test Accounts (Development Only)</summary>
+1. Visit the [Live Demo](https://costasford.github.io/FlowCRM)
+2. Click "Register" to create a new account
+3. Login with your credentials to access the full CRM system
 
-| Role | Email | Password | Access Level |
-|------|--------|----------|-------------|
-| **Admin** | admin@flowcrm.com | admin123 | Full system access |
-| **Manager** | manager@flowcrm.com | manager123 | Property management |
-| **Agent** | agent@flowcrm.com | user123 | Standard user access |
-
-</details>
+**No demo accounts needed** - this is the real application ready for use!
 
 ## Features
 
@@ -30,11 +23,12 @@ A modern, full-stack Customer Relationship Management system designed for proper
 - **Activity Timeline** - Complete audit trail of all interactions
 
 ### 🔐 Security & Authentication
-- **HttpOnly Cookies** - Enterprise-grade XSS protection
-- **JWT Authentication** - Secure token-based auth with automatic refresh
+- **JWT Tokens** - Secure localStorage-based authentication for cross-domain support
+- **Bearer Token Authorization** - All API requests authenticated with JWT tokens
+- **Cross-Domain Compatible** - Frontend (GitHub Pages) + Backend (Railway) architecture
 - **Role-based Access Control** - Admin, Manager, and User permissions
 - **Rate Limiting** - Protection against brute force attacks
-- **CORS Security** - Properly configured cross-origin resource sharing
+- **CORS Security** - Properly configured for GitHub Pages ↔ Railway communication
 - **Input Validation** - Comprehensive data sanitization and validation
 
 ### 📱 Professional User Experience  
@@ -61,10 +55,12 @@ A modern, full-stack Customer Relationship Management system designed for proper
 - **Sequelize** - Object-relational mapping (ORM)
 - **JWT** - JSON Web Tokens for authentication
 
-### Infrastructure
-- **Railway** - Cloud platform for backend deployment
-- **GitHub Pages** - Frontend hosting
-- **Automated migrations** - Database schema management
+### Infrastructure & Deployment
+- **Railway** - Cloud platform for backend + PostgreSQL database
+- **GitHub Pages** - Frontend hosting with cross-domain authentication
+- **localStorage JWT** - Cross-domain compatible authentication strategy
+- **Automated CI/CD** - Deploy frontend via `npm run deploy`
+- **Database Migrations** - Automated schema management
 
 ## Getting Started
 
@@ -101,15 +97,31 @@ A modern, full-stack Customer Relationship Management system designed for proper
 4. **Access the Application**
    - Frontend: http://localhost:5173
    - Backend API: http://localhost:3001
-   - Login with demo accounts (see Demo Accounts section above)
+   - Register a new account or use existing credentials
 
 ## Production Deployment
 
-FlowCRM is production-ready with automated deployment pipelines:
+FlowCRM uses a **cross-domain architecture** optimized for production:
 
-- **Live Demo**: [https://costasford.github.io/FlowCRM](https://costasford.github.io/FlowCRM)
-- **API**: Deployed on Railway with PostgreSQL database
-- **Frontend**: Deployed on GitHub Pages
+- **Frontend**: GitHub Pages hosting at [https://costasford.github.io/FlowCRM](https://costasford.github.io/FlowCRM)
+- **Backend**: Railway hosting at `https://flowcrm-production-1465.up.railway.app`  
+- **Database**: Railway PostgreSQL with automated migrations
+- **Authentication**: localStorage JWT tokens for cross-domain compatibility
+
+### Deployment Commands
+```bash
+# Frontend deployment (from frontend/ directory)
+npm run build:production  # Builds with Railway API URL
+npm run deploy           # Deploys to GitHub Pages
+
+# Backend is auto-deployed to Railway on git push
+```
+
+### Architecture Notes
+- **Cross-domain authentication** handled via localStorage JWT tokens
+- **CORS configured** for GitHub Pages ↔ Railway communication  
+- **No cookies** - avoids SameSite restrictions across domains
+- **Bearer token** authorization on all API requests
 
 ## API Documentation
 
@@ -125,7 +137,7 @@ FlowCRM is production-ready with automated deployment pipelines:
 - `GET|POST /api/tasks` - Task management
 - `GET|POST /api/activities` - Activity timeline
 
-All endpoints use HttpOnly cookie authentication for enhanced security. CORS is properly configured for cross-origin requests.
+All endpoints use **Bearer token authentication** with JWT tokens stored in localStorage. CORS is configured for GitHub Pages ↔ Railway cross-origin requests.
 
 ## Contributing
 
