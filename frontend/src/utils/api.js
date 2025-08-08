@@ -79,8 +79,8 @@ api.interceptors.response.use(
       await tokenStorage.logout();
       
       // Only redirect if not already on login page
-      if (window.location.pathname !== '/login') {
-        window.location.href = '/login';
+      if (window.location.pathname !== '/FlowCRM/login') {
+        window.location.href = '/FlowCRM/login';
       }
     }
     return Promise.reject(error);

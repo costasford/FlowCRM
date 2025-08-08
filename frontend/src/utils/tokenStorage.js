@@ -58,7 +58,8 @@ export const tokenStorage = {
       return true;
     } catch (error) {
       console.error('Failed to logout:', error);
-      return false;
+      // Return true anyway - if logout fails, the server will handle cookie expiration
+      return true;
     }
   },
 
