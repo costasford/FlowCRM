@@ -1,6 +1,22 @@
-# FlowCRM
+# 🏠 FlowCRM - Property Management CRM
 
-A comprehensive Property Management CRM system built specifically for property managers and real estate professionals. Built with Node.js, Express, PostgreSQL, React, and Tailwind CSS.
+> **[🌟 Live Demo](https://costasford.github.io/FlowCRM)** | Interactive property management system with no signup required!
+
+A comprehensive **Property Management CRM** system built specifically for property managers and real estate professionals. Features a drag & drop Kanban board, tenant management, maintenance tracking, and property analytics.
+
+Built with **Node.js, Express, PostgreSQL, React, and Tailwind CSS**.
+
+---
+
+## 🚀 Quick Demo
+
+**Try it now:** **https://costasford.github.io/FlowCRM**
+
+- ✨ **No signup required** - Interactive demo with realistic data
+- 📱 **Mobile responsive** - Perfect for property managers in the field
+- 🏢 **Property-focused** - Built specifically for real estate management
+
+---
 
 ## Tech Stack
 
@@ -45,7 +61,7 @@ A comprehensive Property Management CRM system built specifically for property m
 
 1. **Clone and install dependencies**
    ```bash
-   git clone <repo-url>
+   git clone https://github.com/costasford/FlowCRM.git
    cd FlowCRM
    
    # Install backend dependencies
