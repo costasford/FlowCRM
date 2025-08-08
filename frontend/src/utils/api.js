@@ -99,7 +99,7 @@ const createSmartAPI = (realAPI, demoAPI) => {
   });
 };
 
-// Connection test utility
+// Connection test utility for fetch-based requests
 export const testConnection = async () => {
   try {
     const response = await fetch(`${API_BASE_URL}/auth/me`, {
@@ -113,10 +113,21 @@ export const testConnection = async () => {
       message: response.status === 401 ? 'Server is responding (authentication endpoint working)' : 'Server connected successfully'
     };
   } catch (error) {
+    // Handle fetch-specific errors
+    let errorMessage = 'Network error occurred. Please check your connection and try again.';
+    
+    if (error.name === 'TypeError' && error.message.includes('Failed to fetch')) {
+      errorMessage = 'Unable to connect to server. Please check your internet connection and try again.';
+    } else if (error.name === 'TypeError' && error.message.includes('NetworkError')) {
+      errorMessage = 'Network error occurred. Please try again later.';
+    } else if (error.message) {
+      errorMessage = `Connection failed: ${error.message}`;
+    }
+    
     return {
       connected: false,
-      error: getErrorMessage(error),
-      details: error.message
+      error: errorMessage,
+      details: error.message || 'Unknown network error'
     };
   }
 };
@@ -197,14 +208,21 @@ const realLeadScoresAPI = {
   delete: (id) => api.delete(`/leadscores/${id}`),
 };
 
-// Export smart APIs that automatically switch between demo and real
-export const authAPI = createSmartAPI(realAuthAPI, demoAuthAPI);
-export const usersAPI = createSmartAPI(realUsersAPI, demoUsersAPI);
-export const companiesAPI = createSmartAPI(realCompaniesAPI, demoCompaniesAPI);
-export const contactsAPI = createSmartAPI(realContactsAPI, demoContactsAPI);
-export const dealsAPI = createSmartAPI(realDealsAPI, demoDealsAPI);
-export const tasksAPI = createSmartAPI(realTasksAPI, demoTasksAPI);
-export const activitiesAPI = createSmartAPI(realActivitiesAPI, demoActivitiesAPI);
-export const leadScoresAPI = createSmartAPI(realLeadScoresAPI, demoLeadScoresAPI);
+// DEBUG: Check demo mode status at module load
+console.log('🔧 API Module Loading - Demo Mode Status:', isDemoMode());
+console.log('🔧 API Base URL:', API_BASE_URL);
+console.log('🔧 Environment VITE_DEMO_MODE:', import.meta.env.VITE_DEMO_MODE);
+
+// TEMPORARY: Force real API to isolate the issue
+console.log('🚨 FORCING REAL API - BYPASSING SMART PROXY FOR DEBUGGING');
+
+export const authAPI = realAuthAPI;
+export const usersAPI = realUsersAPI;
+export const companiesAPI = realCompaniesAPI;
+export const contactsAPI = realContactsAPI;
+export const dealsAPI = realDealsAPI;
+export const tasksAPI = realTasksAPI;
+export const activitiesAPI = realActivitiesAPI;
+export const leadScoresAPI = realLeadScoresAPI;
 
 export default api;
