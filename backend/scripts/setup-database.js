@@ -131,18 +131,19 @@ async function setupDatabase() {
     // Create sample activities
     await Activity.bulkCreate([
       {
-        title: 'Called about property availability',
         type: 'call',
-        description: 'Discussed available units and pricing',
+        summary: 'Called about property availability',
+        description: 'Discussed available units and pricing for downtown condo',
         contactId: sampleContacts[0].id,
-        userId: adminExists?.id || (await User.findOne())?.id
+        outcome: 'positive',
+        duration: 15
       },
       {
-        title: 'Sent development proposal',
         type: 'email',
-        description: 'Emailed detailed proposal and timeline',
+        summary: 'Sent development proposal',
+        description: 'Emailed detailed proposal and timeline for commercial project',
         contactId: sampleContacts[1].id,
-        userId: adminExists?.id || (await User.findOne())?.id
+        outcome: 'neutral'
       }
     ]);
     console.log('✅ Sample activities created');
