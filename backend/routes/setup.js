@@ -21,10 +21,9 @@ router.post('/create-admin', async (req, res) => {
     const hashedPassword = await bcrypt.hash('admin123', 10);
     
     const admin = await User.create({
-      firstName: 'Admin',
-      lastName: 'User', 
+      name: 'Admin User',
       email: 'admin@flowcrm.com',
-      password: hashedPassword,
+      passwordHash: hashedPassword,
       role: 'admin'
     });
 
@@ -32,8 +31,7 @@ router.post('/create-admin', async (req, res) => {
       message: 'Admin user created successfully',
       user: {
         id: admin.id,
-        firstName: admin.firstName,
-        lastName: admin.lastName,
+        name: admin.name,
         email: admin.email,
         role: admin.role
       }
