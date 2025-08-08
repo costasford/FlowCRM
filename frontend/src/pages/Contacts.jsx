@@ -1,6 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { contactsAPI } from '../utils/api';
-import { PlusIcon, MagnifyingGlassIcon } from '@heroicons/react/24/outline';
+import { PlusIcon, MagnifyingGlassIcon, PencilIcon, TrashIcon } from '@heroicons/react/24/outline';
+import { usePermissions } from '../hooks/usePermissions';
+import { PermissionGate, PermissionButton } from '../components/common/PermissionGate';
+import { PERMISSIONS } from '../utils/permissions';
 
 const Contacts = () => {
   const [contacts, setContacts] = useState([]);
@@ -8,7 +11,9 @@ const Contacts = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [showAddModal, setShowAddModal] = useState(false);
   const [showViewModal, setShowViewModal] = useState(false);
+  const [showEditModal, setShowEditModal] = useState(false);
   const [selectedContact, setSelectedContact] = useState(null);
+  const [submitError, setSubmitError] = useState('');
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -16,13 +21,17 @@ const Contacts = () => {
     company: ''
   });
 
+  const { ui: permissions, canEditRecord, canViewAllRecords, userId } = usePermissions();
+
   useEffect(() => {
     fetchContacts();
   }, []);
 
   const fetchContacts = async () => {
     try {
-      const response = await contactsAPI.getAll();
+      // For agents, only fetch their own contacts if they can't view all
+      const params = canViewAllRecords('contacts') ? {} : { userId };
+      const response = await contactsAPI.getAll(params);
       setContacts(response.contacts || []);
     } catch (error) {
       console.error('Failed to fetch contacts:', error);
@@ -33,14 +42,47 @@ const Contacts = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setSubmitError('');
     try {
-      await contactsAPI.create(formData);
-      setShowAddModal(false);
+      if (showEditModal && selectedContact) {
+        await contactsAPI.update(selectedContact.id, formData);
+        setShowEditModal(false);
+      } else {
+        await contactsAPI.create(formData);
+        setShowAddModal(false);
+      }
       setFormData({ name: '', email: '', phone: '', company: '' });
+      setSelectedContact(null);
       fetchContacts();
     } catch (error) {
-      console.error('Failed to create contact:', error);
-      alert('Failed to create contact. Please try again.');
+      console.error('Failed to save contact:', error);
+      setSubmitError(error.userMessage || 'Failed to save contact. Please check your input and try again.');
+    }
+  };
+
+  const handleEditContact = (contact) => {
+    setSelectedContact(contact);
+    setFormData({
+      name: contact.name || '',
+      email: contact.email || '',
+      phone: contact.phone || '',
+      company: contact.company?.name || ''
+    });
+    setSubmitError('');
+    setShowEditModal(true);
+  };
+
+  const handleDeleteContact = async (contactId) => {
+    if (!window.confirm('Are you sure you want to delete this contact?')) {
+      return;
+    }
+    
+    try {
+      await contactsAPI.delete(contactId);
+      fetchContacts();
+    } catch (error) {
+      console.error('Failed to delete contact:', error);
+      alert('Failed to delete contact. Please try again.');
     }
   };
 
@@ -74,14 +116,18 @@ const Contacts = () => {
           </p>
         </div>
         <div className="mt-4 sm:mt-0 sm:ml-16 sm:flex-none">
-          <button
-            type="button"
+          <PermissionButton
+            permission={PERMISSIONS.CONTACTS_CREATE}
             className="btn-primary"
-            onClick={() => setShowAddModal(true)}
+            onClick={() => {
+              setSubmitError('');
+              setFormData({ name: '', email: '', phone: '', company: '' });
+              setShowAddModal(true);
+            }}
           >
             <PlusIcon className="h-4 w-4 mr-2" />
             Add Contact
-          </button>
+          </PermissionButton>
         </div>
       </div>
 
@@ -151,12 +197,34 @@ const Contacts = () => {
                       <div className="text-sm text-gray-500">
                         {contact.phone}
                       </div>
-                      <button 
-                        className="text-blue-600 hover:text-blue-900 text-sm font-medium"
-                        onClick={() => handleViewContact(contact)}
-                      >
-                        View
-                      </button>
+                      <div className="flex items-center space-x-2">
+                        <button 
+                          className="text-blue-600 hover:text-blue-900 text-sm font-medium"
+                          onClick={() => handleViewContact(contact)}
+                        >
+                          View
+                        </button>
+                        {canEditRecord('contacts', contact) && (
+                          <button 
+                            className="text-green-600 hover:text-green-900 text-sm font-medium"
+                            onClick={() => handleEditContact(contact)}
+                            title="Edit Contact"
+                          >
+                            <PencilIcon className="h-4 w-4" />
+                          </button>
+                        )}
+                        <PermissionGate permission={PERMISSIONS.CONTACTS_DELETE}>
+                          {canEditRecord('contacts', contact) && (
+                            <button 
+                              className="text-red-600 hover:text-red-900 text-sm font-medium"
+                              onClick={() => handleDeleteContact(contact.id)}
+                              title="Delete Contact"
+                            >
+                              <TrashIcon className="h-4 w-4" />
+                            </button>
+                          )}
+                        </PermissionGate>
+                      </div>
                     </div>
                   </div>
                 </li>
@@ -166,8 +234,8 @@ const Contacts = () => {
         )}
       </div>
 
-      {/* Add Contact Modal */}
-      {showAddModal && (
+      {/* Add/Edit Contact Modal */}
+      {(showAddModal || showEditModal) && (
         <div className="fixed inset-0 z-50 overflow-y-auto">
           <div className="flex items-center justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
             <div className="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" onClick={() => setShowAddModal(false)}></div>
@@ -231,12 +299,17 @@ const Contacts = () => {
                     type="submit"
                     className="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-blue-600 text-base font-medium text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 sm:ml-3 sm:w-auto sm:text-sm"
                   >
-                    Add Contact
+                    {showEditModal ? 'Update Contact' : 'Add Contact'}
                   </button>
                   <button
                     type="button"
                     className="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm"
-                    onClick={() => setShowAddModal(false)}
+                    onClick={() => {
+                      setShowAddModal(false);
+                      setShowEditModal(false);
+                      setSelectedContact(null);
+                      setSubmitError('');
+                    }}
                   >
                     Cancel
                   </button>
@@ -303,6 +376,32 @@ const Contacts = () => {
                 >
                   Close
                 </button>
+                {canEditRecord('contacts', selectedContact) && (
+                  <button
+                    type="button"
+                    className="mt-3 w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-blue-600 text-base font-medium text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 sm:mt-0 sm:mr-3 sm:w-auto sm:text-sm"
+                    onClick={() => {
+                      setShowViewModal(false);
+                      handleEditContact(selectedContact);
+                    }}
+                  >
+                    Edit
+                  </button>
+                )}
+                <PermissionGate permission={PERMISSIONS.CONTACTS_DELETE}>
+                  {canEditRecord('contacts', selectedContact) && (
+                    <button
+                      type="button"
+                      className="mt-3 w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-red-600 text-base font-medium text-white hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 sm:mt-0 sm:mr-3 sm:w-auto sm:text-sm"
+                      onClick={() => {
+                        setShowViewModal(false);
+                        handleDeleteContact(selectedContact.id);
+                      }}
+                    >
+                      Delete
+                    </button>
+                  )}
+                </PermissionGate>
               </div>
             </div>
           </div>

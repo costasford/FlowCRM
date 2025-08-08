@@ -6,8 +6,13 @@ import {
   ClipboardDocumentListIcon,
   CheckCircleIcon,
   ExclamationTriangleIcon,
-  ClockIcon
+  ClockIcon,
+  PencilIcon,
+  TrashIcon
 } from '@heroicons/react/24/outline';
+import { usePermissions } from '../hooks/usePermissions';
+import { PermissionGate, PermissionButton } from '../components/common/PermissionGate';
+import { PERMISSIONS } from '../utils/permissions';
 
 const Tasks = () => {
   const [tasks, setTasks] = useState([]);
@@ -16,13 +21,17 @@ const Tasks = () => {
   const [filterStatus, setFilterStatus] = useState('all');
   const [showAddModal, setShowAddModal] = useState(false);
   const [showViewModal, setShowViewModal] = useState(false);
+  const [showEditModal, setShowEditModal] = useState(false);
   const [selectedTask, setSelectedTask] = useState(null);
+  const [submitError, setSubmitError] = useState('');
   const [formData, setFormData] = useState({
     title: '',
     description: '',
     priority: 'medium',
     dueDate: ''
   });
+
+  const { ui: permissions, canEditRecord, canViewAllRecords, userId } = usePermissions();
 
   useEffect(() => {
     fetchTasks();
@@ -55,6 +64,7 @@ const Tasks = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setSubmitError('');
     try {
       await tasksAPI.create(formData);
       setShowAddModal(false);
@@ -62,7 +72,7 @@ const Tasks = () => {
       fetchTasks();
     } catch (error) {
       console.error('Failed to create task:', error);
-      alert('Failed to create task. Please try again.');
+      setSubmitError(error.userMessage || 'Failed to create task. Please check your input and try again.');
     }
   };
 
@@ -138,7 +148,10 @@ const Tasks = () => {
           <button
             type="button"
             className="btn-primary"
-            onClick={() => setShowAddModal(true)}
+            onClick={() => {
+              setSubmitError('');
+              setShowAddModal(true);
+            }}
           >
             <PlusIcon className="h-4 w-4 mr-2" />
             Create Task
@@ -249,6 +262,13 @@ const Tasks = () => {
               <form onSubmit={handleSubmit}>
                 <div className="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
                   <h3 className="text-lg leading-6 font-medium text-gray-900 mb-4">Create New Task</h3>
+                  
+                  {submitError && (
+                    <div className="mb-4 bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg">
+                      <div className="font-medium">Error</div>
+                      <div className="text-sm mt-1">{submitError}</div>
+                    </div>
+                  )}
                   
                   <div className="space-y-4">
                     <div>
