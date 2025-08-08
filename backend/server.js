@@ -56,6 +56,7 @@ const activityRoutes = require('./routes/activities');
 const taskRoutes = require('./routes/tasks');
 const userRoutes = require('./routes/users');
 const leadScoreRoutes = require('./routes/leadscores');
+const setupRoutes = require('./routes/setup');
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -95,6 +96,7 @@ app.get('/health', (req, res) => {
 
 // API routes
 app.use('/api/auth', authRoutes);
+app.use('/api/setup', setupRoutes);
 app.use('/api/contacts', contactRoutes);
 app.use('/api/companies', companyRoutes);
 app.use('/api/deals', dealRoutes);
