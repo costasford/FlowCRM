@@ -49,6 +49,36 @@ Built with **Node.js, Express, PostgreSQL, React, and Tailwind CSS**.
 - 🔍 **Advanced Search & Filtering** - Find properties, contacts, and deals quickly
 - 📈 **Dashboard Analytics** - Real-time insights into property management metrics
 
+---
+
+## 🚀 Deployment Options
+
+### **🌟 Live Demo (GitHub Pages)**
+**URL**: https://costasford.github.io/FlowCRM  
+**Purpose**: Portfolio showcase, client demos, skill demonstration  
+**Features**: Interactive frontend with realistic demo data
+
+### **🏢 Production API (Railway)**
+**Branch**: `railway-backend`  
+**Purpose**: Real business application with persistent database  
+**Features**: Full PostgreSQL backend, JWT authentication, team collaboration
+
+### **⚡ Quick Railway Deployment:**
+```bash
+# Install Railway CLI
+npm install -g @railway/cli
+
+# Switch to backend-only branch
+git checkout railway-backend
+
+# Deploy in 2 minutes
+railway login && railway link && railway up
+```
+
+**See [RAILWAY_DEPLOYMENT.md](RAILWAY_DEPLOYMENT.md) for detailed production setup.**
+
+---
+
 ## Quick Start
 
 ### Prerequisites
@@ -126,25 +156,41 @@ After running the seeders, you can log in with these demo accounts:
 
 ## Project Structure
 
+### **Repository Branches:**
+- **`main`**: Full-stack development (frontend + backend)
+- **`railway-backend`**: Production API deployment (backend only)
+
+### **Main Branch Structure:**
 ```
-FlowCRM/
-├── backend/
-│   ├── config/
-│   ├── middleware/
-│   ├── models/
-│   ├── routes/
-│   ├── seeders/
-│   ├── migrations/
-│   └── server.js
-├── frontend/
-│   ├── public/
+FlowCRM/ (main branch - full development)
+├── backend/               # Express API server
+│   ├── config/           # Database configuration
+│   ├── middleware/       # JWT authentication
+│   ├── models/          # Sequelize models
+│   ├── routes/          # API endpoints
+│   ├── migrations/      # Database schema
+│   └── seeders/         # Sample data
+├── frontend/            # React application
 │   ├── src/
-│   │   ├── components/
-│   │   ├── pages/
-│   │   ├── context/
-│   │   └── utils/
+│   │   ├── components/  # React components
+│   │   ├── pages/       # Route pages
+│   │   ├── utils/       # API utilities
+│   │   └── contexts/    # Auth context
 │   └── package.json
 └── README.md
+```
+
+### **Railway Branch Structure:**
+```
+FlowCRM/ (railway-backend branch - production)
+├── package.json         # Backend dependencies only
+├── server.js           # Express server
+├── .dockerignore       # Excludes frontend from builds
+├── config/             # Database config
+├── models/             # Property management models
+├── routes/             # API endpoints
+├── migrations/         # Database setup
+└── seeders/            # Sample property data
 ```
 
 ## API Endpoints
