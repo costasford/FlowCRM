@@ -8,9 +8,9 @@ async function setupDatabase() {
     await sequelize.authenticate();
     console.log('✅ Database connection established');
     
-    // Sync all models - this will create tables if they don't exist
-    await sequelize.sync({ alter: true });
-    console.log('✅ Database tables synchronized');
+    // Drop and recreate all tables to ensure clean state
+    await sequelize.sync({ force: true });
+    console.log('✅ Database tables recreated with clean state');
     
     // Check if admin user exists
     const adminExists = await User.findOne({ where: { email: 'admin@flowcrm.com' } });
@@ -31,27 +31,108 @@ async function setupDatabase() {
       console.log('✅ Admin user already exists');
     }
     
-    // Create sample data if no companies exist
-    const companyCount = await Company.count();
-    if (companyCount === 0) {
-      await Company.bulkCreate([
-        {
-          name: 'Sunset Properties',
-          industry: 'Real Estate',
-          location: 'San Francisco, CA',
-          phone: '(555) 123-4567',
-          notes: 'Luxury residential properties in downtown SF'
-        },
-        {
-          name: 'Greenfield Developments',
-          industry: 'Property Development',
-          location: 'Austin, TX',
-          phone: '(555) 987-6543',
-          notes: 'Commercial and residential development projects'
-        }
-      ]);
-      console.log('✅ Sample companies created');
-    }
+    // Create sample data
+    const sampleCompanies = await Company.bulkCreate([
+      {
+        name: 'Sunset Properties',
+        industry: 'Real Estate',
+        location: 'San Francisco, CA',
+        phone: '(555) 123-4567',
+        notes: 'Luxury residential properties in downtown SF'
+      },
+      {
+        name: 'Greenfield Developments',
+        industry: 'Property Development',
+        location: 'Austin, TX',
+        phone: '(555) 987-6543',
+        notes: 'Commercial and residential development projects'
+      }
+    ]);
+    console.log('✅ Sample companies created');
+
+    // Create sample contacts
+    const sampleContacts = await Contact.bulkCreate([
+      {
+        name: 'John Smith',
+        email: 'john.smith@sunset.com',
+        phone: '(555) 111-2222',
+        companyId: sampleCompanies[0].id,
+        jobTitle: 'Property Manager',
+        notes: 'Primary contact for Sunset Properties'
+      },
+      {
+        name: 'Sarah Johnson',
+        email: 'sarah.j@greenfield.com',
+        phone: '(555) 333-4444',
+        companyId: sampleCompanies[1].id,
+        jobTitle: 'Development Director',
+        notes: 'Handles all new development projects'
+      }
+    ]);
+    console.log('✅ Sample contacts created');
+
+    // Create sample deals
+    await Deal.bulkCreate([
+      {
+        title: 'Downtown Condo Lease',
+        contactId: sampleContacts[0].id,
+        companyId: sampleCompanies[0].id,
+        value: 250000,
+        stage: 'proposal',
+        status: 'open',
+        description: '2-bedroom luxury condo lease for 2 years'
+      },
+      {
+        title: 'Commercial Development Contract',
+        contactId: sampleContacts[1].id,
+        companyId: sampleCompanies[1].id,
+        value: 850000,
+        stage: 'negotiation',
+        status: 'open',
+        description: 'New commercial complex development project'
+      }
+    ]);
+    console.log('✅ Sample deals created');
+
+    // Create sample tasks
+    await Task.bulkCreate([
+      {
+        title: 'Schedule property inspection',
+        description: 'Arrange inspection for downtown condo unit',
+        priority: 'high',
+        status: 'pending',
+        assignedUserId: adminExists?.id || (await User.findOne())?.id,
+        contactId: sampleContacts[0].id
+      },
+      {
+        title: 'Review development permits',
+        description: 'Check all permits are in order for new project',
+        priority: 'medium',
+        status: 'pending',
+        assignedUserId: adminExists?.id || (await User.findOne())?.id,
+        contactId: sampleContacts[1].id
+      }
+    ]);
+    console.log('✅ Sample tasks created');
+
+    // Create sample activities
+    await Activity.bulkCreate([
+      {
+        title: 'Called about property availability',
+        type: 'call',
+        description: 'Discussed available units and pricing',
+        contactId: sampleContacts[0].id,
+        userId: adminExists?.id || (await User.findOne())?.id
+      },
+      {
+        title: 'Sent development proposal',
+        type: 'email',
+        description: 'Emailed detailed proposal and timeline',
+        contactId: sampleContacts[1].id,
+        userId: adminExists?.id || (await User.findOne())?.id
+      }
+    ]);
+    console.log('✅ Sample activities created');
     
     console.log('🎉 Database setup complete!');
     
