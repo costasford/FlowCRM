@@ -1,179 +1,111 @@
-# 🏠 FlowCRM - Property Management CRM
+# FlowCRM - Property Management CRM
 
-> **[🌟 Live Demo](https://costasford.github.io/FlowCRM)** | Interactive property management system with no signup required!
+A modern, full-stack Customer Relationship Management system designed for property management professionals.
 
-A comprehensive **Property Management CRM** system built specifically for property managers and real estate professionals. Features a drag & drop Kanban board, tenant management, maintenance tracking, and property analytics.
-
-Built with **Node.js, Express, PostgreSQL, React, and Tailwind CSS**.
-
----
-
-## 🚀 Quick Demo
-
-**Try it now:** **https://costasford.github.io/FlowCRM**
-
-- ✨ **No signup required** - Interactive demo with realistic data
-- 📱 **Mobile responsive** - Perfect for property managers in the field
-- 🏢 **Property-focused** - Built specifically for real estate management
-
----
-
-## Tech Stack
-
-- **Backend:** Node.js, Express, PostgreSQL, Sequelize ORM
-- **Frontend:** React (Vite), Tailwind CSS, Axios
-- **Auth:** JWT authentication with bcrypt
-- **Database:** PostgreSQL with Sequelize migrations
+**[🌟 Live Demo](https://costasford.github.io/FlowCRM)** - Try it now with no signup required!
 
 ## Features
 
-### Core Property Management
-- 🏢 **Property/Company Management** - Track properties, buildings, and real estate companies
-- 👥 **Contact Management** - Manage tenants, property owners, vendors, and prospects
-- 💰 **Deal Pipeline** - Track leases, renewals, maintenance contracts with Kanban board
-- ✅ **Task Management** - Property maintenance, inspections, follow-ups with priority levels
-- 📈 **Lead Scoring** - Automatic scoring for property management prospects
-- 📝 **Activity Logging** - Track all interactions, calls, emails, and property visits
+### 🏠 Property Management
+- **Contact Management** - Track leads, clients, and property owners
+- **Company Database** - Manage property management companies and contractors  
+- **Deal Pipeline** - Visual kanban board for tracking property transactions
+- **Task Management** - Assign and track follow-up tasks
+- **Activity Timeline** - Complete audit trail of all interactions
 
-### Property Management Focused Features
-- 🔧 **Maintenance Tracking** - Property-specific maintenance tasks and contracts
-- 📋 **Tenant Management** - Lease tracking, renewal management, tenant communications
-- 🏗️ **Multi-Property Support** - Manage multiple properties and buildings
-- 📊 **Property Analytics** - Revenue tracking, occupancy rates, deal values
-- 🎯 **Property-Specific Tags** - Commercial, residential, multi-unit, high-value classifications
-- 💼 **Role-Based Access** - Admin, Property Manager, and Leasing Agent permissions
+### 🔐 Security & Authentication
+- JWT-based authentication with role-based access control
+- Secure password hashing with bcrypt
+- Rate limiting and CORS protection
+- Input validation and SQL injection prevention
 
-### Technical Features
-- 🔐 **JWT Authentication** - Secure login with role-based permissions
-- 📱 **Responsive Design** - Works on desktop, tablet, and mobile
-- 🔍 **Advanced Search & Filtering** - Find properties, contacts, and deals quickly
-- 📈 **Dashboard Analytics** - Real-time insights into property management metrics
+### 📱 Modern User Experience  
+- Responsive design that works on desktop and mobile
+- Clean, professional interface with Tailwind CSS
+- Real-time updates and seamless navigation
+- Intuitive drag-and-drop deal management
 
-## Quick Start
+## Technology Stack
+
+### Frontend
+- **React** - Modern JavaScript framework
+- **Vite** - Fast build tool and development server
+- **Tailwind CSS** - Utility-first CSS framework
+- **React Router** - Client-side routing
+- **Axios** - HTTP client for API calls
+
+### Backend  
+- **Node.js** - JavaScript runtime
+- **Express.js** - Web application framework
+- **PostgreSQL** - Relational database
+- **Sequelize** - Object-relational mapping (ORM)
+- **JWT** - JSON Web Tokens for authentication
+
+### Infrastructure
+- **Railway** - Cloud platform for backend deployment
+- **GitHub Pages** - Frontend hosting
+- **Automated migrations** - Database schema management
+
+## Getting Started
 
 ### Prerequisites
+- Node.js 18+ 
+- PostgreSQL database
+- Git
 
-- Node.js (v18+)
-- PostgreSQL (v12+)
-- npm or yarn
+### Local Development
 
-### Setup
-
-1. **Clone and install dependencies**
+1. **Clone the repository**
    ```bash
    git clone https://github.com/costasford/FlowCRM.git
    cd FlowCRM
-   
-   # Install backend dependencies
+   ```
+
+2. **Backend Setup**
+   ```bash
    cd backend
    npm install
-   
-   # Install frontend dependencies
-   cd ../frontend
-   npm install
-   cd ..
-   ```
-
-2. **Setup PostgreSQL Database**
-   ```bash
-   # Create database
-   createdb flowcrm_dev
-   ```
-
-3. **Configure Environment Variables**
-   ```bash
-   # Backend
-   cd backend
-   cp .env.example .env
-   # Edit .env with your database credentials and JWT secret
-   
-   # Frontend  
-   cd ../frontend
-   cp .env.example .env
-   # Edit .env with your API URL
-   ```
-
-4. **Run Database Migrations & Seeds**
-   ```bash
-   cd backend
-   npx sequelize-cli db:migrate
-   npx sequelize-cli db:seed:all
-   ```
-
-5. **Start Development Servers**
-   ```bash
-   # Terminal 1 - Backend (port 5000)
-   cd backend
+   # Configure your .env file with database credentials
+   npm run migrate
+   npm run seed
    npm run dev
-   
-   # Terminal 2 - Frontend (port 3000)  
+   ```
+
+3. **Frontend Setup** 
+   ```bash
    cd frontend
+   npm install
    npm run dev
    ```
 
-6. **Open your browser**
-   ```
-   http://localhost:3000
-   ```
+4. **Access the Application**
+   - Frontend: http://localhost:5173
+   - Backend API: http://localhost:5000
+   - Login with: admin@flowcrm.com / admin123
 
-## Demo Accounts
+## Production Deployment
 
-After running the seeders, you can log in with these demo accounts:
+FlowCRM is production-ready with automated deployment pipelines:
 
-- **Admin:** admin@flowcrm.com / admin123
-- **Property Manager:** manager@flowcrm.com / manager123  
-- **Leasing Agent:** agent@flowcrm.com / user123
+- **Live Demo**: [https://costasford.github.io/FlowCRM](https://costasford.github.io/FlowCRM)
+- **API**: Deployed on Railway with PostgreSQL database
+- **Frontend**: Deployed on GitHub Pages
 
-## Project Structure
+## API Documentation
 
-```
-FlowCRM/
-├── backend/
-│   ├── config/
-│   ├── middleware/
-│   ├── models/
-│   ├── routes/
-│   ├── seeders/
-│   ├── migrations/
-│   └── server.js
-├── frontend/
-│   ├── public/
-│   ├── src/
-│   │   ├── components/
-│   │   ├── pages/
-│   │   ├── context/
-│   │   └── utils/
-│   └── package.json
-└── README.md
-```
+### Authentication Endpoints
+- `POST /api/auth/login` - User authentication
+- `POST /api/auth/register` - User registration  
+- `GET /api/users/me` - Get current user profile
 
-## API Endpoints
+### Core Resources
+- `GET|POST /api/contacts` - Contact management
+- `GET|POST /api/companies` - Company management
+- `GET|POST /api/deals` - Deal pipeline management
+- `GET|POST /api/tasks` - Task management
+- `GET|POST /api/activities` - Activity timeline
 
-### Authentication
-- `POST /api/auth/register` - Register new user
-- `POST /api/auth/login` - Login user
-
-### CRUD Endpoints
-- `GET/POST/PUT/DELETE /api/contacts` - Contact management
-- `GET/POST/PUT/DELETE /api/companies` - Company management
-- `GET/POST/PUT/DELETE /api/deals` - Deal management
-- `GET/POST/PUT/DELETE /api/activities` - Activity logging
-- `GET/POST/PUT/DELETE /api/tasks` - Task management
-- `GET/POST/PUT/DELETE /api/users` - User management
-- `GET/POST/PUT/DELETE /api/leadscores` - Lead scoring
-
-## Development
-
-### Backend Scripts
-- `npm run dev` - Start with nodemon
-- `npm start` - Production start
-- `npm run migrate` - Run migrations
-- `npm run seed` - Run seeders
-
-### Frontend Scripts  
-- `npm run dev` - Start Vite dev server
-- `npm run build` - Build for production
-- `npm run preview` - Preview production build
+All endpoints require JWT authentication via `Authorization: Bearer <token>` header.
 
 ## Contributing
 
@@ -185,4 +117,12 @@ FlowCRM/
 
 ## License
 
-MIT License
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+## Support
+
+For support or questions about FlowCRM, please open an issue in this repository.
+
+---
+
+Built with ❤️ for modern property management professionals
