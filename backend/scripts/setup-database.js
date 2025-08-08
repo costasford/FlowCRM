@@ -8,9 +8,15 @@ async function setupDatabase() {
     await sequelize.authenticate();
     console.log('✅ Database connection established');
     
-    // Drop and recreate all tables to ensure clean state
-    await sequelize.sync({ force: true });
-    console.log('✅ Database tables recreated with clean state');
+    // Create tables without forcing (safer approach)
+    try {
+      await sequelize.sync({ force: false, alter: false });
+      console.log('✅ Database tables synchronized');
+    } catch (syncError) {
+      console.log('⚠️ Sync failed, trying with alter=true:', syncError.message);
+      await sequelize.sync({ force: false, alter: true });
+      console.log('✅ Database tables synchronized with alter');
+    }
     
     // Check if admin user exists
     const adminExists = await User.findOne({ where: { email: 'admin@flowcrm.com' } });
