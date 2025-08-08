@@ -19,6 +19,7 @@ const NewDealModal = ({ isOpen, onClose, onSuccess }) => {
   const [companies, setCompanies] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  const [fieldErrors, setFieldErrors] = useState({});
 
   useEffect(() => {
     if (isOpen) {
@@ -57,6 +58,7 @@ const NewDealModal = ({ isOpen, onClose, onSuccess }) => {
     e.preventDefault();
     setLoading(true);
     setError('');
+    setFieldErrors({});
 
     try {
       const dealData = {
@@ -72,7 +74,28 @@ const NewDealModal = ({ isOpen, onClose, onSuccess }) => {
       onSuccess();
     } catch (error) {
       console.error('Failed to create deal:', error);
-      setError(error.response?.data?.error || 'Failed to create deal');
+      
+      // Handle field-level validation errors
+      if (error.response?.data?.validationErrors) {
+        setFieldErrors(error.response.data.validationErrors);
+        setError('Please correct the errors below.');
+      } else if (error.response?.data?.errors && Array.isArray(error.response.data.errors)) {
+        // Handle array of field errors
+        const fieldErrorMap = {};
+        error.response.data.errors.forEach(err => {
+          if (err.field) {
+            fieldErrorMap[err.field] = err.message;
+          }
+        });
+        if (Object.keys(fieldErrorMap).length > 0) {
+          setFieldErrors(fieldErrorMap);
+          setError('Please correct the errors below.');
+        } else {
+          setError(error.userMessage || error.response?.data?.error || 'Failed to create deal. Please try again.');
+        }
+      } else {
+        setError(error.userMessage || error.response?.data?.error || 'Failed to create deal. Please try again.');
+      }
     } finally {
       setLoading(false);
     }
@@ -100,7 +123,8 @@ const NewDealModal = ({ isOpen, onClose, onSuccess }) => {
         <form onSubmit={handleSubmit} className="space-y-4">
           {error && (
             <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg">
-              {error}
+              <div className="font-medium">Error</div>
+              <div className="text-sm mt-1">{error}</div>
             </div>
           )}
 
@@ -115,9 +139,14 @@ const NewDealModal = ({ isOpen, onClose, onSuccess }) => {
               value={formData.title}
               onChange={handleChange}
               required
-              className="input-field"
+              className={`input-field ${
+                fieldErrors.title ? 'border-red-300 focus:border-red-500 focus:ring-red-500' : ''
+              }`}
               placeholder="e.g., Downtown Office Lease Renewal"
             />
+            {fieldErrors.title && (
+              <p className="mt-1 text-sm text-red-600">{fieldErrors.title}</p>
+            )}
           </div>
 
           {/* Description */}
@@ -130,9 +159,14 @@ const NewDealModal = ({ isOpen, onClose, onSuccess }) => {
               value={formData.description}
               onChange={handleChange}
               rows={3}
-              className="input-field"
+              className={`input-field ${
+                fieldErrors.description ? 'border-red-300 focus:border-red-500 focus:ring-red-500' : ''
+              }`}
               placeholder="Deal details, property info, special terms..."
             />
+            {fieldErrors.description && (
+              <p className="mt-1 text-sm text-red-600">{fieldErrors.description}</p>
+            )}
           </div>
 
           {/* Two column layout */}
@@ -149,9 +183,14 @@ const NewDealModal = ({ isOpen, onClose, onSuccess }) => {
                 onChange={handleChange}
                 min="0"
                 step="0.01"
-                className="input-field"
+                className={`input-field ${
+                  fieldErrors.value ? 'border-red-300 focus:border-red-500 focus:ring-red-500' : ''
+                }`}
                 placeholder="50000"
               />
+              {fieldErrors.value && (
+                <p className="mt-1 text-sm text-red-600">{fieldErrors.value}</p>
+              )}
             </div>
 
             {/* Probability */}
@@ -166,8 +205,13 @@ const NewDealModal = ({ isOpen, onClose, onSuccess }) => {
                 onChange={handleChange}
                 min="0"
                 max="100"
-                className="input-field"
+                className={`input-field ${
+                  fieldErrors.probability ? 'border-red-300 focus:border-red-500 focus:ring-red-500' : ''
+                }`}
               />
+              {fieldErrors.probability && (
+                <p className="mt-1 text-sm text-red-600">{fieldErrors.probability}</p>
+              )}
             </div>
 
             {/* Stage */}
@@ -179,7 +223,9 @@ const NewDealModal = ({ isOpen, onClose, onSuccess }) => {
                 name="stage"
                 value={formData.stage}
                 onChange={handleChange}
-                className="input-field"
+                className={`input-field ${
+                  fieldErrors.stage ? 'border-red-300 focus:border-red-500 focus:ring-red-500' : ''
+                }`}
               >
                 <option value="lead">New Lead</option>
                 <option value="qualified">Qualified</option>
@@ -188,6 +234,9 @@ const NewDealModal = ({ isOpen, onClose, onSuccess }) => {
                 <option value="closed_won">Won</option>
                 <option value="closed_lost">Lost</option>
               </select>
+              {fieldErrors.stage && (
+                <p className="mt-1 text-sm text-red-600">{fieldErrors.stage}</p>
+              )}
             </div>
 
             {/* Priority */}
@@ -199,13 +248,18 @@ const NewDealModal = ({ isOpen, onClose, onSuccess }) => {
                 name="priority"
                 value={formData.priority}
                 onChange={handleChange}
-                className="input-field"
+                className={`input-field ${
+                  fieldErrors.priority ? 'border-red-300 focus:border-red-500 focus:ring-red-500' : ''
+                }`}
               >
                 <option value="low">Low</option>
                 <option value="medium">Medium</option>
                 <option value="high">High</option>
                 <option value="urgent">Urgent</option>
               </select>
+              {fieldErrors.priority && (
+                <p className="mt-1 text-sm text-red-600">{fieldErrors.priority}</p>
+              )}
             </div>
 
             {/* Contact */}
@@ -217,7 +271,9 @@ const NewDealModal = ({ isOpen, onClose, onSuccess }) => {
                 name="contactId"
                 value={formData.contactId}
                 onChange={handleChange}
-                className="input-field"
+                className={`input-field ${
+                  fieldErrors.contactId ? 'border-red-300 focus:border-red-500 focus:ring-red-500' : ''
+                }`}
               >
                 <option value="">Select a contact...</option>
                 {contacts.map(contact => (
@@ -226,6 +282,9 @@ const NewDealModal = ({ isOpen, onClose, onSuccess }) => {
                   </option>
                 ))}
               </select>
+              {fieldErrors.contactId && (
+                <p className="mt-1 text-sm text-red-600">{fieldErrors.contactId}</p>
+              )}
             </div>
 
             {/* Company */}
@@ -237,7 +296,9 @@ const NewDealModal = ({ isOpen, onClose, onSuccess }) => {
                 name="companyId"
                 value={formData.companyId}
                 onChange={handleChange}
-                className="input-field"
+                className={`input-field ${
+                  fieldErrors.companyId ? 'border-red-300 focus:border-red-500 focus:ring-red-500' : ''
+                }`}
               >
                 <option value="">Select a property...</option>
                 {companies.map(company => (
@@ -246,6 +307,9 @@ const NewDealModal = ({ isOpen, onClose, onSuccess }) => {
                   </option>
                 ))}
               </select>
+              {fieldErrors.companyId && (
+                <p className="mt-1 text-sm text-red-600">{fieldErrors.companyId}</p>
+              )}
             </div>
           </div>
 
@@ -259,8 +323,13 @@ const NewDealModal = ({ isOpen, onClose, onSuccess }) => {
               name="closeDate"
               value={formData.closeDate}
               onChange={handleChange}
-              className="input-field"
+              className={`input-field ${
+                fieldErrors.closeDate ? 'border-red-300 focus:border-red-500 focus:ring-red-500' : ''
+              }`}
             />
+            {fieldErrors.closeDate && (
+              <p className="mt-1 text-sm text-red-600">{fieldErrors.closeDate}</p>
+            )}
           </div>
 
           {/* Action Buttons */}

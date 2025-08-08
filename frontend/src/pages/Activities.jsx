@@ -15,6 +15,7 @@ const Activities = () => {
   const [loading, setLoading] = useState(true);
   const [filterType, setFilterType] = useState('all');
   const [showAddModal, setShowAddModal] = useState(false);
+  const [submitError, setSubmitError] = useState('');
   const [formData, setFormData] = useState({
     type: 'note',
     title: '',
@@ -38,6 +39,7 @@ const Activities = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setSubmitError('');
     try {
       await activitiesAPI.create(formData);
       setShowAddModal(false);
@@ -45,7 +47,7 @@ const Activities = () => {
       fetchActivities();
     } catch (error) {
       console.error('Failed to create activity:', error);
-      alert('Failed to create activity. Please try again.');
+      setSubmitError(error.userMessage || 'Failed to create activity. Please check your input and try again.');
     }
   };
 
@@ -153,7 +155,10 @@ const Activities = () => {
           <button
             type="button"
             className="btn-primary"
-            onClick={() => setShowAddModal(true)}
+            onClick={() => {
+              setSubmitError('');
+              setShowAddModal(true);
+            }}
           >
             <PlusIcon className="h-4 w-4 mr-2" />
             Log Activity
@@ -269,6 +274,13 @@ const Activities = () => {
               <form onSubmit={handleSubmit}>
                 <div className="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
                   <h3 className="text-lg leading-6 font-medium text-gray-900 mb-4">Log New Activity</h3>
+                  
+                  {submitError && (
+                    <div className="mb-4 bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg">
+                      <div className="font-medium">Error</div>
+                      <div className="text-sm mt-1">{submitError}</div>
+                    </div>
+                  )}
                   
                   <div className="space-y-4">
                     <div>
