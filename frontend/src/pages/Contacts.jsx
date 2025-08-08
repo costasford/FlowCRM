@@ -136,17 +136,17 @@ const Contacts = () => {
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div className="sm:flex sm:items-center">
-        <div className="sm:flex-auto">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between">
+        <div className="flex-auto">
           <h1 className="text-2xl font-bold text-gray-900">Contacts</h1>
           <p className="mt-2 text-sm text-gray-700">
             Manage your property contacts, leads, and clients
           </p>
         </div>
-        <div className="mt-4 sm:mt-0 sm:ml-16 sm:flex-none">
+        <div className="mt-4 sm:mt-0 sm:ml-4 flex-shrink-0">
           <PermissionButton
             permission={PERMISSIONS.CONTACTS_CREATE}
-            className="btn-primary"
+            className="btn-primary w-full sm:w-auto"
             onClick={() => {
               setSubmitError('');
               setFormData({ name: '', email: '', phone: '', company: '' });
@@ -210,8 +210,8 @@ const Contacts = () => {
           <div className="overflow-hidden">
             <ul className="divide-y divide-gray-200">
               {contacts.map((contact) => (
-                <li key={contact.id} className="px-6 py-4 hover:bg-gray-50">
-                  <div className="flex items-center justify-between">
+                <li key={contact.id} className="px-4 py-4 sm:px-6 hover:bg-gray-50">
+                  <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between">
                     <div className="flex items-center">
                       <div className="h-10 w-10 flex-shrink-0">
                         <div className="h-10 w-10 rounded-full bg-blue-100 flex items-center justify-center">
@@ -220,16 +220,26 @@ const Contacts = () => {
                           </span>
                         </div>
                       </div>
-                      <div className="ml-4">
+                      <div className="ml-4 flex-1">
                         <div className="text-sm font-medium text-gray-900">
                           {contact.name}
                         </div>
                         <div className="text-sm text-gray-500">
                           {contact.email}
                         </div>
+                        <div className="mt-1 sm:hidden text-xs text-gray-500 space-y-1">
+                          {contact.company && (
+                            <div>Company: {contact.company.name}</div>
+                          )}
+                          {contact.phone && (
+                            <div>Phone: {contact.phone}</div>
+                          )}
+                        </div>
                       </div>
                     </div>
-                    <div className="flex items-center space-x-4">
+                    
+                    {/* Desktop layout */}
+                    <div className="hidden sm:flex sm:items-center sm:space-x-4">
                       {contact.company && (
                         <div className="text-sm text-gray-500">
                           {contact.company.name}
@@ -266,6 +276,34 @@ const Contacts = () => {
                           )}
                         </PermissionGate>
                       </div>
+                    </div>
+                    
+                    {/* Mobile actions */}
+                    <div className="mt-3 flex justify-end space-x-3 sm:hidden">
+                      <button 
+                        className="text-blue-600 hover:text-blue-900 text-sm font-medium"
+                        onClick={() => handleViewContact(contact)}
+                      >
+                        View
+                      </button>
+                      {canEditRecord('contacts', contact) && (
+                        <button 
+                          className="text-green-600 hover:text-green-900 text-sm font-medium"
+                          onClick={() => handleEditContact(contact)}
+                        >
+                          Edit
+                        </button>
+                      )}
+                      <PermissionGate permission={PERMISSIONS.CONTACTS_DELETE}>
+                        {canEditRecord('contacts', contact) && (
+                          <button 
+                            className="text-red-600 hover:text-red-900 text-sm font-medium"
+                            onClick={() => handleDeleteContact(contact.id)}
+                          >
+                            Delete
+                          </button>
+                        )}
+                      </PermissionGate>
                     </div>
                   </div>
                 </li>
