@@ -1,12 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { companiesAPI } from '../utils/api';
-import { PlusIcon, MagnifyingGlassIcon, BuildingOfficeIcon } from '@heroicons/react/24/outline';
+import { PlusIcon, MagnifyingGlassIcon, BuildingOfficeIcon, PencilIcon, TrashIcon } from '@heroicons/react/24/outline';
 
 const Companies = () => {
   const [companies, setCompanies] = useState([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
   const [showAddModal, setShowAddModal] = useState(false);
+  const [showEditModal, setShowEditModal] = useState(false);
   const [showViewModal, setShowViewModal] = useState(false);
   const [selectedCompany, setSelectedCompany] = useState(null);
   const [formData, setFormData] = useState({
@@ -35,19 +36,51 @@ const Companies = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      await companiesAPI.create(formData);
-      setShowAddModal(false);
+      if (showEditModal && selectedCompany) {
+        await companiesAPI.update(selectedCompany.id, formData);
+        setShowEditModal(false);
+        setSelectedCompany(null);
+      } else {
+        await companiesAPI.create(formData);
+        setShowAddModal(false);
+      }
       setFormData({ name: '', email: '', phone: '', industry: '', address: '' });
       fetchCompanies(); // Refresh the list
     } catch (error) {
-      console.error('Failed to create company:', error);
-      alert('Failed to create property. Please try again.');
+      console.error('Failed to save company:', error);
+      alert('Failed to save property. Please try again.');
     }
   };
 
   const handleViewCompany = (company) => {
     setSelectedCompany(company);
     setShowViewModal(true);
+  };
+
+  const handleEditCompany = (company) => {
+    setSelectedCompany(company);
+    setFormData({
+      name: company.name || '',
+      email: company.email || '',
+      phone: company.phone || '',
+      industry: company.industry || '',
+      address: company.address || ''
+    });
+    setShowEditModal(true);
+  };
+
+  const handleDeleteCompany = async (companyId) => {
+    if (!window.confirm('Are you sure you want to delete this property? This action cannot be undone.')) {
+      return;
+    }
+    
+    try {
+      await companiesAPI.delete(companyId);
+      fetchCompanies();
+    } catch (error) {
+      console.error('Failed to delete company:', error);
+      alert('Failed to delete property. Please try again.');
+    }
   };
 
   const filteredCompanies = companies.filter(company =>
@@ -136,12 +169,28 @@ const Companies = () => {
                       <div className="text-sm text-gray-500">
                         {company.phone}
                       </div>
-                      <button 
-                        className="text-blue-600 hover:text-blue-900 text-sm font-medium"
-                        onClick={() => handleViewCompany(company)}
-                      >
-                        View
-                      </button>
+                      <div className="flex items-center space-x-2">
+                        <button 
+                          className="text-blue-600 hover:text-blue-900 text-sm font-medium"
+                          onClick={() => handleViewCompany(company)}
+                        >
+                          View
+                        </button>
+                        <button 
+                          className="text-green-600 hover:text-green-900 text-sm font-medium"
+                          onClick={() => handleEditCompany(company)}
+                          title="Edit Property"
+                        >
+                          <PencilIcon className="h-4 w-4" />
+                        </button>
+                        <button 
+                          className="text-red-600 hover:text-red-900 text-sm font-medium"
+                          onClick={() => handleDeleteCompany(company.id)}
+                          title="Delete Property"
+                        >
+                          <TrashIcon className="h-4 w-4" />
+                        </button>
+                      </div>
                     </div>
                   </div>
                 </li>
@@ -151,16 +200,22 @@ const Companies = () => {
         )}
       </div>
 
-      {/* Add Property Modal */}
-      {showAddModal && (
+      {/* Add/Edit Property Modal */}
+      {(showAddModal || showEditModal) && (
         <div className="fixed inset-0 z-50 overflow-y-auto">
           <div className="flex items-center justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
-            <div className="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" onClick={() => setShowAddModal(false)}></div>
+            <div className="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" onClick={() => {
+              setShowAddModal(false);
+              setShowEditModal(false);
+              setSelectedCompany(null);
+            }}></div>
             
             <div className="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full">
               <form onSubmit={handleSubmit}>
                 <div className="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
-                  <h3 className="text-lg leading-6 font-medium text-gray-900 mb-4">Add New Property</h3>
+                  <h3 className="text-lg leading-6 font-medium text-gray-900 mb-4">
+                    {showEditModal ? 'Edit Property' : 'Add New Property'}
+                  </h3>
                   
                   <div className="space-y-4">
                     <div>
@@ -231,12 +286,16 @@ const Companies = () => {
                     type="submit"
                     className="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-blue-600 text-base font-medium text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 sm:ml-3 sm:w-auto sm:text-sm"
                   >
-                    Add Property
+                    {showEditModal ? 'Update Property' : 'Add Property'}
                   </button>
                   <button
                     type="button"
                     className="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm"
-                    onClick={() => setShowAddModal(false)}
+                    onClick={() => {
+                      setShowAddModal(false);
+                      setShowEditModal(false);
+                      setSelectedCompany(null);
+                    }}
                   >
                     Cancel
                   </button>

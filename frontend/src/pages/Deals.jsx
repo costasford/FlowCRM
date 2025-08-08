@@ -2,7 +2,8 @@ import React, { useState, useEffect } from 'react';
 import KanbanBoard from '../components/deals/KanbanBoard';
 import NewDealModal from '../components/deals/NewDealModal';
 import { dealsAPI } from '../utils/api';
-import { PlusIcon, TableCellsIcon, Squares2X2Icon, CurrencyDollarIcon } from '@heroicons/react/24/outline';
+import { PlusIcon, TableCellsIcon, Squares2X2Icon, CurrencyDollarIcon, PencilIcon, TrashIcon } from '@heroicons/react/24/outline';
+import { getStageColor } from '../utils/accessibleColors';
 
 const Deals = () => {
   const [showNewDealModal, setShowNewDealModal] = useState(false);
@@ -10,6 +11,7 @@ const Deals = () => {
   const [deals, setDeals] = useState([]);
   const [loading, setLoading] = useState(true);
   const [showViewModal, setShowViewModal] = useState(false);
+  const [showEditModal, setShowEditModal] = useState(false);
   const [selectedDeal, setSelectedDeal] = useState(null);
 
   useEffect(() => {
@@ -34,21 +36,49 @@ const Deals = () => {
     }).format(amount);
   };
 
-  const getStageColor = (stage) => {
-    const colors = {
-      lead: 'bg-gray-100 text-gray-800',
-      qualified: 'bg-blue-100 text-blue-800',
-      proposal: 'bg-yellow-100 text-yellow-800',
-      negotiation: 'bg-orange-100 text-orange-800',
-      closed: 'bg-green-100 text-green-800',
-      lost: 'bg-red-100 text-red-800',
-    };
-    return colors[stage] || colors.lead;
-  };
 
   const handleViewDeal = (deal) => {
     setSelectedDeal(deal);
     setShowViewModal(true);
+  };
+
+  const handleEditDeal = (deal) => {
+    setSelectedDeal(deal);
+    setShowEditModal(true);
+  };
+
+  const handleDeleteDeal = async (dealId) => {
+    if (!window.confirm('Are you sure you want to delete this deal? This action cannot be undone.')) {
+      return;
+    }
+    
+    try {
+      await dealsAPI.delete(dealId);
+      fetchDeals();
+    } catch (error) {
+      console.error('Failed to delete deal:', error);
+      alert('Failed to delete deal. Please try again.');
+    }
+  };
+
+  const handleStageChange = async (dealId, newStage) => {
+    try {
+      // Optimistically update the UI
+      setDeals(prevDeals => 
+        prevDeals.map(deal => 
+          deal.id === dealId 
+            ? { ...deal, stage: newStage }
+            : deal
+        )
+      );
+      
+      // Update the deal stage in the backend
+      await dealsAPI.updateStage(dealId, newStage);
+    } catch (error) {
+      console.error('Failed to update deal stage:', error);
+      // Revert the optimistic update on error
+      fetchDeals();
+    }
   };
 
   return (
@@ -167,9 +197,18 @@ const Deals = () => {
                         </div>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
-                        <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${getStageColor(deal.stage)}`}>
-                          {deal.stage}
-                        </span>
+                        <select
+                          value={deal.stage}
+                          onChange={(e) => handleStageChange(deal.id, e.target.value)}
+                          className={`text-xs font-semibold rounded-full border-0 px-2 py-1 focus:ring-2 focus:ring-blue-500 ${getStageColor(deal.stage)}`}
+                        >
+                          <option value="lead">New Lead</option>
+                          <option value="qualified">Qualified</option>
+                          <option value="proposal">Proposal Sent</option>
+                          <option value="negotiation">Negotiating</option>
+                          <option value="closed_won">Won</option>
+                          <option value="closed_lost">Lost</option>
+                        </select>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                         {deal.expectedCloseDate 
@@ -178,12 +217,28 @@ const Deals = () => {
                         }
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                        <button 
-                          className="text-blue-600 hover:text-blue-900"
-                          onClick={() => handleViewDeal(deal)}
-                        >
-                          View
-                        </button>
+                        <div className="flex items-center justify-end space-x-2">
+                          <button 
+                            className="text-blue-600 hover:text-blue-900"
+                            onClick={() => handleViewDeal(deal)}
+                          >
+                            View
+                          </button>
+                          <button 
+                            className="text-green-600 hover:text-green-900"
+                            onClick={() => handleEditDeal(deal)}
+                            title="Edit Deal"
+                          >
+                            <PencilIcon className="h-4 w-4" />
+                          </button>
+                          <button 
+                            className="text-red-600 hover:text-red-900"
+                            onClick={() => handleDeleteDeal(deal.id)}
+                            title="Delete Deal"
+                          >
+                            <TrashIcon className="h-4 w-4" />
+                          </button>
+                        </div>
                       </td>
                     </tr>
                   ))}
@@ -194,16 +249,23 @@ const Deals = () => {
         </div>
       )}
 
-      {/* New Deal Modal */}
-      {showNewDealModal && (
+      {/* New/Edit Deal Modal */}
+      {(showNewDealModal || showEditModal) && (
         <NewDealModal
-          isOpen={showNewDealModal}
-          onClose={() => setShowNewDealModal(false)}
+          isOpen={showNewDealModal || showEditModal}
+          onClose={() => {
+            setShowNewDealModal(false);
+            setShowEditModal(false);
+            setSelectedDeal(null);
+          }}
           onSuccess={() => {
             setShowNewDealModal(false);
+            setShowEditModal(false);
+            setSelectedDeal(null);
             // Refresh the deals list
             fetchDeals();
           }}
+          editDeal={showEditModal ? selectedDeal : null}
         />
       )}
 
@@ -239,10 +301,22 @@ const Deals = () => {
                     </div>
                     
                     <div>
-                      <label className="block text-sm font-medium text-gray-700">Stage</label>
-                      <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${getStageColor(selectedDeal.stage)}`}>
-                        {selectedDeal.stage}
-                      </span>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">Stage</label>
+                      <select
+                        value={selectedDeal.stage}
+                        onChange={(e) => {
+                          handleStageChange(selectedDeal.id, e.target.value);
+                          setSelectedDeal({ ...selectedDeal, stage: e.target.value });
+                        }}
+                        className={`text-sm font-semibold rounded-md border border-gray-300 px-3 py-1 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 ${getStageColor(selectedDeal.stage)}`}
+                      >
+                        <option value="lead">New Lead</option>
+                        <option value="qualified">Qualified</option>
+                        <option value="proposal">Proposal Sent</option>
+                        <option value="negotiation">Negotiating</option>
+                        <option value="closed_won">Won</option>
+                        <option value="closed_lost">Lost</option>
+                      </select>
                     </div>
                   </div>
                   
@@ -280,7 +354,27 @@ const Deals = () => {
               <div className="bg-gray-50 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse">
                 <button
                   type="button"
-                  className="w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 sm:ml-3 sm:w-auto sm:text-sm"
+                  className="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-blue-600 text-base font-medium text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 sm:ml-3 sm:w-auto sm:text-sm"
+                  onClick={() => {
+                    setShowViewModal(false);
+                    handleEditDeal(selectedDeal);
+                  }}
+                >
+                  Edit Deal
+                </button>
+                <button
+                  type="button"
+                  className="mt-3 w-full inline-flex justify-center rounded-md border border-red-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-red-700 hover:bg-red-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm"
+                  onClick={() => {
+                    setShowViewModal(false);
+                    handleDeleteDeal(selectedDeal.id);
+                  }}
+                >
+                  Delete Deal
+                </button>
+                <button
+                  type="button"
+                  className="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm"
                   onClick={() => setShowViewModal(false)}
                 >
                   Close

@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { XMarkIcon } from '@heroicons/react/24/outline';
 import { dealsAPI, contactsAPI, companiesAPI } from '../../utils/api';
+import DateInput from '../common/DateInput';
 
-const NewDealModal = ({ isOpen, onClose, onSuccess }) => {
+const NewDealModal = ({ isOpen, onClose, onSuccess, editDeal = null }) => {
   const [formData, setFormData] = useState({
     title: '',
     description: '',
@@ -25,8 +26,38 @@ const NewDealModal = ({ isOpen, onClose, onSuccess }) => {
     if (isOpen) {
       fetchContacts();
       fetchCompanies();
+      
+      // Populate form data if editing
+      if (editDeal) {
+        setFormData({
+          title: editDeal.title || '',
+          description: editDeal.description || '',
+          stage: editDeal.stage || 'lead',
+          status: editDeal.status || 'open',
+          value: editDeal.value ? editDeal.value.toString() : '',
+          probability: editDeal.probability ? editDeal.probability.toString() : '50',
+          priority: editDeal.priority || 'medium',
+          closeDate: editDeal.expectedCloseDate ? editDeal.expectedCloseDate.split('T')[0] : '',
+          contactId: editDeal.contactId ? editDeal.contactId.toString() : '',
+          companyId: editDeal.companyId ? editDeal.companyId.toString() : '',
+        });
+      } else {
+        // Reset form for new deal
+        setFormData({
+          title: '',
+          description: '',
+          stage: 'lead',
+          status: 'open',
+          value: '',
+          probability: '50',
+          priority: 'medium',
+          closeDate: '',
+          contactId: '',
+          companyId: '',
+        });
+      }
     }
-  }, [isOpen]);
+  }, [isOpen, editDeal]);
 
   const fetchContacts = async () => {
     try {
@@ -70,7 +101,11 @@ const NewDealModal = ({ isOpen, onClose, onSuccess }) => {
         companyId: formData.companyId || null,
       };
 
-      await dealsAPI.create(dealData);
+      if (editDeal) {
+        await dealsAPI.update(editDeal.id, dealData);
+      } else {
+        await dealsAPI.create(dealData);
+      }
       onSuccess();
     } catch (error) {
       console.error('Failed to create deal:', error);
@@ -109,7 +144,7 @@ const NewDealModal = ({ isOpen, onClose, onSuccess }) => {
         {/* Header */}
         <div className="flex items-center justify-between mb-4">
           <h3 className="text-lg font-medium text-gray-900">
-            Create New Deal
+            {editDeal ? 'Edit Deal' : 'Create New Deal'}
           </h3>
           <button
             onClick={onClose}
@@ -315,21 +350,15 @@ const NewDealModal = ({ isOpen, onClose, onSuccess }) => {
 
           {/* Close Date */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              Expected Close Date
-            </label>
-            <input
-              type="date"
+            <DateInput
+              label="Expected Close Date"
               name="closeDate"
               value={formData.closeDate}
-              onChange={handleChange}
-              className={`input-field ${
-                fieldErrors.closeDate ? 'border-red-300 focus:border-red-500 focus:ring-red-500' : ''
-              }`}
+              onChange={(value) => handleChange({ target: { name: 'closeDate', value } })}
+              placeholder="Enter expected close date..."
+              error={fieldErrors.closeDate}
+              className={fieldErrors.closeDate ? 'border-red-300 focus:border-red-500 focus:ring-red-500' : ''}
             />
-            {fieldErrors.closeDate && (
-              <p className="mt-1 text-sm text-red-600">{fieldErrors.closeDate}</p>
-            )}
           </div>
 
           {/* Action Buttons */}
@@ -347,7 +376,7 @@ const NewDealModal = ({ isOpen, onClose, onSuccess }) => {
               className="btn-primary"
               disabled={loading}
             >
-              {loading ? 'Creating...' : 'Create Deal'}
+              {loading ? (editDeal ? 'Updating...' : 'Creating...') : (editDeal ? 'Update Deal' : 'Create Deal')}
             </button>
           </div>
         </form>

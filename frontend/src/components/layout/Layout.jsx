@@ -36,7 +36,7 @@ const Layout = () => {
     logout();
   };
 
-  // Close dropdown when clicking outside
+  // Close dropdown when clicking outside and handle keyboard navigation
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (profileRef.current && !profileRef.current.contains(event.target)) {
@@ -44,20 +44,43 @@ const Layout = () => {
       }
     };
 
+    const handleKeyDown = (event) => {
+      // Close dropdowns and sidebar on Escape key
+      if (event.key === 'Escape') {
+        if (profileDropdownOpen) {
+          setProfileDropdownOpen(false);
+        }
+        if (sidebarOpen) {
+          setSidebarOpen(false);
+        }
+      }
+    };
+
     document.addEventListener('mousedown', handleClickOutside);
-    return () => document.removeEventListener('mousedown', handleClickOutside);
-  }, []);
+    document.addEventListener('keydown', handleKeyDown);
+    
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+      document.removeEventListener('keydown', handleKeyDown);
+    };
+  }, [profileDropdownOpen, sidebarOpen]);
 
   return (
     <div className="min-h-screen bg-gray-50 flex">
       {/* Mobile sidebar */}
-      <div className={`fixed inset-0 z-40 lg:hidden ${sidebarOpen ? '' : 'hidden'}`}>
-        <div className="fixed inset-0 bg-gray-600 bg-opacity-75" onClick={() => setSidebarOpen(false)}></div>
+      <div 
+        className={`fixed inset-0 z-40 lg:hidden ${sidebarOpen ? '' : 'hidden'}`}
+        role="dialog" 
+        aria-modal="true" 
+        aria-label="Navigation menu"
+      >
+        <div className="fixed inset-0 bg-gray-600 bg-opacity-75" onClick={() => setSidebarOpen(false)} aria-hidden="true"></div>
         <div className="relative flex-1 flex flex-col max-w-xs w-full bg-white">
           <div className="absolute top-0 right-0 -mr-12 pt-2">
             <button
               className="ml-1 flex items-center justify-center h-10 w-10 rounded-full focus:outline-none focus:ring-2 focus:ring-inset focus:ring-white"
               onClick={() => setSidebarOpen(false)}
+              aria-label="Close navigation menu"
             >
               <XMarkIcon className="h-6 w-6 text-white" />
             </button>
@@ -66,7 +89,7 @@ const Layout = () => {
             <div className="flex-shrink-0 flex items-center px-4">
               <h1 className="text-2xl font-bold text-blue-600">FlowCRM</h1>
             </div>
-            <nav className="mt-5 px-2 space-y-1">
+            <nav className="mt-5 px-2 space-y-1" aria-label="Main navigation">
               {navigation.map((item) => {
                 const Icon = item.icon;
                 const isActive = location.pathname === item.to;
@@ -74,12 +97,13 @@ const Layout = () => {
                   <Link
                     key={item.name}
                     to={item.to}
-                    className={`group flex items-center px-2 py-2 text-base font-medium rounded-md ${
+                    className={`group flex items-center px-2 py-2 text-base font-medium rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 ${
                       isActive
                         ? 'bg-blue-100 text-blue-900'
                         : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
                     }`}
                     onClick={() => setSidebarOpen(false)}
+                    aria-current={isActive ? 'page' : undefined}
                   >
                     <Icon className="mr-4 h-6 w-6" />
                     {item.name}
@@ -99,7 +123,7 @@ const Layout = () => {
               <div className="flex items-center flex-shrink-0 px-4">
                 <h1 className="text-2xl font-bold text-blue-600">FlowCRM</h1>
               </div>
-              <nav className="mt-5 flex-1 px-2 space-y-1">
+              <nav className="mt-5 flex-1 px-2 space-y-1" aria-label="Main navigation">
                 {navigation.map((item) => {
                   const Icon = item.icon;
                   const isActive = location.pathname === item.to;
@@ -107,11 +131,12 @@ const Layout = () => {
                     <Link
                       key={item.name}
                       to={item.to}
-                      className={`group flex items-center px-2 py-2 text-sm font-medium rounded-md ${
+                      className={`group flex items-center px-2 py-2 text-sm font-medium rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 ${
                         isActive
                           ? 'bg-blue-100 text-blue-900'
                           : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
                       }`}
+                      aria-current={isActive ? 'page' : undefined}
                     >
                       <Icon className="mr-3 h-6 w-6" />
                       {item.name}
@@ -126,7 +151,10 @@ const Layout = () => {
               <div className="relative w-full" ref={profileRef}>
                 <button
                   onClick={() => setProfileDropdownOpen(!profileDropdownOpen)}
-                  className="flex items-center w-full text-left hover:bg-gray-50 rounded-lg p-2 transition-colors"
+                  className="flex items-center w-full text-left hover:bg-gray-50 rounded-lg p-2 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+                  aria-expanded={profileDropdownOpen}
+                  aria-haspopup="menu"
+                  aria-label="User menu"
                 >
                   <div>
                     <UserCircleIcon className="inline-block h-8 w-8 text-gray-400" />
@@ -140,7 +168,11 @@ const Layout = () => {
 
                 {/* Profile Dropdown */}
                 {profileDropdownOpen && (
-                  <div className="absolute bottom-full left-0 right-0 mb-2 bg-white border border-gray-200 rounded-lg shadow-lg py-2 z-50">
+                  <div 
+                    className="absolute bottom-full left-0 right-0 mb-2 bg-white border border-gray-200 rounded-lg shadow-lg py-2 z-50"
+                    role="menu"
+                    aria-label="User account menu"
+                  >
                     <div className="px-3 py-2 border-b border-gray-100">
                       <p className="text-sm font-medium text-gray-900">{user?.name}</p>
                       <p className="text-xs text-gray-500">{user?.email}</p>
@@ -150,8 +182,10 @@ const Layout = () => {
                         setProfileDropdownOpen(false);
                         // Profile settings functionality would go here
                       }}
-                      className="flex items-center w-full px-3 py-2 text-sm text-gray-400 cursor-not-allowed"
+                      className="flex items-center w-full px-3 py-2 text-sm text-gray-400 cursor-not-allowed focus:outline-none"
                       disabled
+                      role="menuitem"
+                      aria-disabled="true"
                     >
                       <Cog6ToothIcon className="h-4 w-4 mr-2" />
                       Profile Settings (Coming Soon)
@@ -161,7 +195,8 @@ const Layout = () => {
                         setProfileDropdownOpen(false);
                         handleLogout();
                       }}
-                      className="flex items-center w-full px-3 py-2 text-sm text-red-700 hover:bg-red-50"
+                      className="flex items-center w-full px-3 py-2 text-sm text-red-700 hover:bg-red-50 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-inset"
+                      role="menuitem"
                     >
                       <ArrowRightOnRectangleIcon className="h-4 w-4 mr-2" />
                       Sign Out
@@ -179,8 +214,9 @@ const Layout = () => {
         {/* Mobile header */}
         <div className="lg:hidden flex items-center justify-between bg-white border-b border-gray-200 px-4 py-2">
           <button
-            className="text-gray-500 hover:text-gray-600"
+            className="text-gray-500 hover:text-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 rounded-md p-1"
             onClick={() => setSidebarOpen(true)}
+            aria-label="Open navigation menu"
           >
             <Bars3Icon className="h-6 w-6" />
           </button>
@@ -188,15 +224,21 @@ const Layout = () => {
           <div className="relative">
             <button
               onClick={() => setProfileDropdownOpen(!profileDropdownOpen)}
-              className="text-gray-400 hover:text-gray-600"
-              title="Profile Menu"
+              className="text-gray-400 hover:text-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 rounded-md p-1"
+              aria-label="User menu"
+              aria-expanded={profileDropdownOpen}
+              aria-haspopup="menu"
             >
               <UserCircleIcon className="h-6 w-6" />
             </button>
 
             {/* Mobile Profile Dropdown */}
             {profileDropdownOpen && (
-              <div className="absolute right-0 top-full mt-2 w-64 bg-white border border-gray-200 rounded-lg shadow-lg py-2 z-50">
+              <div 
+                className="absolute right-0 top-full mt-2 w-64 bg-white border border-gray-200 rounded-lg shadow-lg py-2 z-50"
+                role="menu"
+                aria-label="User account menu"
+              >
                 <div className="px-3 py-2 border-b border-gray-100">
                   <p className="text-sm font-medium text-gray-900">{user?.name}</p>
                   <p className="text-xs text-gray-500">{user?.email}</p>
@@ -206,8 +248,10 @@ const Layout = () => {
                     setProfileDropdownOpen(false);
                     // Profile settings functionality would go here
                   }}
-                  className="flex items-center w-full px-3 py-2 text-sm text-gray-400 cursor-not-allowed"
+                  className="flex items-center w-full px-3 py-2 text-sm text-gray-400 cursor-not-allowed focus:outline-none"
                   disabled
+                  role="menuitem"
+                  aria-disabled="true"
                 >
                   <Cog6ToothIcon className="h-4 w-4 mr-2" />
                   Profile Settings (Coming Soon)
@@ -217,7 +261,8 @@ const Layout = () => {
                     setProfileDropdownOpen(false);
                     handleLogout();
                   }}
-                  className="flex items-center w-full px-3 py-2 text-sm text-red-700 hover:bg-red-50"
+                  className="flex items-center w-full px-3 py-2 text-sm text-red-700 hover:bg-red-50 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-inset"
+                  role="menuitem"
                 >
                   <ArrowRightOnRectangleIcon className="h-4 w-4 mr-2" />
                   Sign Out
@@ -228,7 +273,7 @@ const Layout = () => {
         </div>
 
         {/* Page content */}
-        <main className="flex-1 relative overflow-y-auto focus:outline-none">
+        <main className="flex-1 relative overflow-y-auto focus:outline-none" role="main" aria-label="Main content">
           <div className="py-6">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
               <Outlet />

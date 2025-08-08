@@ -1,9 +1,18 @@
 import React, { useState, useEffect } from 'react';
 import { contactsAPI } from '../utils/api';
-import { PlusIcon, MagnifyingGlassIcon, PencilIcon, TrashIcon } from '@heroicons/react/24/outline';
+import { PlusIcon, MagnifyingGlassIcon } from '@heroicons/react/24/outline';
 import { usePermissions } from '../hooks/usePermissions';
-import { PermissionGate, PermissionButton } from '../components/common/PermissionGate';
+import { PermissionButton } from '../components/common/PermissionGate';
 import { PERMISSIONS } from '../utils/permissions';
+
+// Contact components
+import ContactFormModal from '../components/contacts/ContactFormModal';
+import ContactViewModal from '../components/contacts/ContactViewModal';
+import ContactsList from '../components/contacts/ContactsList';
+import ContactsPagination from '../components/contacts/ContactsPagination';
+import SectionErrorBoundary from '../components/common/SectionErrorBoundary';
+import AsyncErrorBoundary from '../components/common/AsyncErrorBoundary';
+import ModalErrorBoundary from '../components/common/ModalErrorBoundary';
 
 const Contacts = () => {
   const [contacts, setContacts] = useState([]);
@@ -180,7 +189,8 @@ const Contacts = () => {
       )}
 
       {/* Contacts List */}
-      <div className="card">
+      <AsyncErrorBoundary operation="loading contacts" size="large">
+        <div className="card">
         {contacts.length === 0 && !loading ? (
           <div className="text-center py-12">
             <svg

@@ -22,9 +22,9 @@ export const AuthProvider = ({ children }) => {
       try {
         if (tokenStorage.hasToken()) {
           // Try to get current user with token
-          const userData = await authAPI.getCurrentUser();
-          if (userData) {
-            setUser(userData);
+          const response = await authAPI.getCurrentUser();
+          if (response && response.user) {
+            setUser(response.user);
           }
         }
       } catch (error) {

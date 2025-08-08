@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { memo, useMemo } from 'react';
 import { useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
 import {
@@ -8,8 +8,9 @@ import {
   CalendarIcon,
   ExclamationCircleIcon,
 } from '@heroicons/react/24/outline';
+import { getPriorityColor } from '../../utils/accessibleColors';
 
-const DealCard = ({ deal, isDragging = false }) => {
+const DealCard = memo(({ deal, isDragging = false }) => {
   const {
     attributes,
     listeners,
@@ -27,33 +28,26 @@ const DealCard = ({ deal, isDragging = false }) => {
     opacity: isSortableDragging ? 0.5 : 1,
   };
 
-  const formatCurrency = (amount) => {
+  const formattedValue = useMemo(() => {
+    if (!deal.value) return null;
     return new Intl.NumberFormat('en-US', {
       style: 'currency',
       currency: 'USD',
       minimumFractionDigits: 0,
-    }).format(amount);
-  };
+    }).format(deal.value);
+  }, [deal.value]);
 
-  const formatDate = (dateString) => {
-    if (!dateString) return null;
-    return new Date(dateString).toLocaleDateString('en-US', {
+  const formattedDate = useMemo(() => {
+    if (!deal.closeDate) return null;
+    return new Date(deal.closeDate).toLocaleDateString('en-US', {
       month: 'short',
       day: 'numeric',
     });
-  };
+  }, [deal.closeDate]);
 
-  const getPriorityColor = (priority) => {
-    const colors = {
-      low: 'bg-green-100 text-green-800',
-      medium: 'bg-yellow-100 text-yellow-800',
-      high: 'bg-orange-100 text-orange-800',
-      urgent: 'bg-red-100 text-red-800',
-    };
-    return colors[priority] || colors.medium;
-  };
-
-  const isOverdue = deal.closeDate && new Date(deal.closeDate) < new Date() && deal.status === 'open';
+  const isOverdue = useMemo(() => {
+    return deal.closeDate && new Date(deal.closeDate) < new Date() && deal.status === 'open';
+  }, [deal.closeDate, deal.status]);
 
   return (
     <div
@@ -85,7 +79,7 @@ const DealCard = ({ deal, isDragging = false }) => {
         <div className="flex items-center mb-2">
           <CurrencyDollarIcon className="h-4 w-4 text-green-600 mr-1" />
           <span className="text-sm font-semibold text-green-600">
-            {formatCurrency(deal.value)}
+            {formattedValue}
           </span>
           {deal.probability && (
             <span className="text-xs text-gray-500 ml-2">
@@ -114,7 +108,7 @@ const DealCard = ({ deal, isDragging = false }) => {
       {/* Footer */}
       <div className="flex items-center justify-between pt-2 border-t border-gray-100">
         {/* Priority Badge */}
-        <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium ${getPriorityColor(deal.priority)}`}>
+        <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium border ${getPriorityColor(deal.priority)}`}>
           {deal.priority}
         </span>
 
@@ -127,7 +121,7 @@ const DealCard = ({ deal, isDragging = false }) => {
             <>
               <CalendarIcon className="h-3 w-3 mr-1" />
               <span className={isOverdue ? 'text-red-500 font-medium' : ''}>
-                {formatDate(deal.closeDate)}
+                {formattedDate}
               </span>
             </>
           )}
@@ -135,6 +129,8 @@ const DealCard = ({ deal, isDragging = false }) => {
       </div>
     </div>
   );
-};
+});
+
+DealCard.displayName = 'DealCard';
 
 export default DealCard;

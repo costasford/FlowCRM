@@ -13,6 +13,8 @@ import {
 import { usePermissions } from '../hooks/usePermissions';
 import { PermissionGate, PermissionButton } from '../components/common/PermissionGate';
 import { PERMISSIONS } from '../utils/permissions';
+import DateInput from '../components/common/DateInput';
+import { getPriorityColor } from '../utils/accessibleColors';
 
 const Tasks = () => {
   const [tasks, setTasks] = useState([]);
@@ -125,15 +127,6 @@ const Tasks = () => {
     return matchesSearch && matchesFilter;
   });
 
-  const getPriorityColor = (priority) => {
-    const colors = {
-      low: 'bg-green-100 text-green-800',
-      medium: 'bg-yellow-100 text-yellow-800',
-      high: 'bg-orange-100 text-orange-800',
-      urgent: 'bg-red-100 text-red-800',
-    };
-    return colors[priority] || colors.medium;
-  };
 
   const getStatusIcon = (status, priority, dueDate) => {
     if (status === 'completed') {
@@ -270,7 +263,7 @@ const Tasks = () => {
                       </div>
                     </div>
                     <div className="flex items-center space-x-3">
-                      <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getPriorityColor(task.priority)}`}>
+                      <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium border ${getPriorityColor(task.priority)}`}>
                         {task.priority}
                       </span>
                       {task.dueDate && (
@@ -385,12 +378,12 @@ const Tasks = () => {
                     </div>
                     
                     <div>
-                      <label className="block text-sm font-medium text-gray-700">Due Date</label>
-                      <input
-                        type="date"
-                        className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                      <DateInput
+                        label="Due Date"
                         value={formData.dueDate}
-                        onChange={(e) => setFormData({...formData, dueDate: e.target.value})}
+                        onChange={(value) => setFormData({...formData, dueDate: value})}
+                        placeholder="Enter due date..."
+                        name="dueDate"
                       />
                     </div>
                   </div>
@@ -448,7 +441,7 @@ const Tasks = () => {
                   <div className="grid grid-cols-2 gap-4">
                     <div>
                       <label className="block text-sm font-medium text-gray-700">Priority</label>
-                      <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getPriorityColor(selectedTask.priority)}`}>
+                      <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium border ${getPriorityColor(selectedTask.priority)}`}>
                         {selectedTask.priority}
                       </span>
                     </div>

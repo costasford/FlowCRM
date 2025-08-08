@@ -22,6 +22,8 @@ import {
 import KanbanColumn from './KanbanColumn';
 import DealCard from './DealCard';
 import { dealsAPI } from '../../utils/api';
+import AsyncErrorBoundary from '../common/AsyncErrorBoundary';
+import SectionErrorBoundary from '../common/SectionErrorBoundary';
 
 const DEAL_STAGES = [
   {
@@ -65,6 +67,7 @@ const DEAL_STAGES = [
 const KanbanBoard = () => {
   const [deals, setDeals] = useState({});
   const [activeId, setActiveId] = useState(null);
+  const [originalContainer, setOriginalContainer] = useState(null);
   const [loading, setLoading] = useState(true);
   const [stats, setStats] = useState({});
 
@@ -97,7 +100,10 @@ const KanbanBoard = () => {
   };
 
   const handleDragStart = (event) => {
-    setActiveId(event.active.id);
+    const activeId = event.active.id;
+    setActiveId(activeId);
+    // Store the original container to track stage changes
+    setOriginalContainer(findContainer(activeId));
   };
 
   const handleDragOver = (event) => {
@@ -153,6 +159,7 @@ const KanbanBoard = () => {
     
     if (!over) {
       setActiveId(null);
+      setOriginalContainer(null);
       return;
     }
 
@@ -164,6 +171,7 @@ const KanbanBoard = () => {
 
     if (!activeContainer || !overContainer) {
       setActiveId(null);
+      setOriginalContainer(null);
       return;
     }
 
@@ -172,8 +180,9 @@ const KanbanBoard = () => {
     );
     const overIndex = deals[overContainer].findIndex((item) => item.id === overId);
 
+    // Handle reordering within the same container
     if (activeContainer === overContainer) {
-      const newIndex = overIndex;
+      const newIndex = overIndex >= 0 ? overIndex : deals[overContainer].length;
       
       setDeals((prev) => ({
         ...prev,
@@ -181,10 +190,11 @@ const KanbanBoard = () => {
       }));
     }
 
-    // Update the deal stage in the backend
-    if (activeContainer !== overContainer) {
+    // Update the deal stage in the backend if moved to different container
+    if (originalContainer && originalContainer !== overContainer) {
       try {
         await dealsAPI.updateStage(activeId, overContainer);
+        console.log(`Successfully updated deal ${activeId} from ${originalContainer} to ${overContainer}`);
       } catch (error) {
         console.error('Failed to update deal stage:', error);
         // Revert the change on error
@@ -193,6 +203,7 @@ const KanbanBoard = () => {
     }
 
     setActiveId(null);
+    setOriginalContainer(null);
   };
 
   const findContainer = (id) => {
@@ -234,35 +245,38 @@ const KanbanBoard = () => {
   return (
     <div className="space-y-6">
       {/* Pipeline Stats */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-        <div className="bg-white rounded-lg shadow p-4">
-          <p className="text-sm font-medium text-gray-600">Total Deals</p>
-          <p className="text-2xl font-bold text-gray-900">{stats.totalDeals || 0}</p>
+      <SectionErrorBoundary section="Pipeline Statistics" size="normal">
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+          <div className="bg-white rounded-lg shadow p-4">
+            <p className="text-sm font-medium text-gray-600">Total Deals</p>
+            <p className="text-2xl font-bold text-gray-900">{stats.totalDeals || 0}</p>
+          </div>
+          <div className="bg-white rounded-lg shadow p-4">
+            <p className="text-sm font-medium text-gray-600">Total Value</p>
+            <p className="text-2xl font-bold text-gray-900">
+              {formatCurrency(stats.totalValue || 0)}
+            </p>
+          </div>
+          <div className="bg-white rounded-lg shadow p-4">
+            <p className="text-sm font-medium text-gray-600">Avg Deal Size</p>
+            <p className="text-2xl font-bold text-gray-900">
+              {formatCurrency(stats.avgDealSize || 0)}
+            </p>
+          </div>
+          <div className="bg-white rounded-lg shadow p-4">
+            <p className="text-sm font-medium text-gray-600">Win Rate</p>
+            <p className="text-2xl font-bold text-gray-900">
+              {stats.totalDeals > 0 
+                ? Math.round(((deals.closed_won?.length || 0) / stats.totalDeals) * 100) 
+                : 0}%
+            </p>
+          </div>
         </div>
-        <div className="bg-white rounded-lg shadow p-4">
-          <p className="text-sm font-medium text-gray-600">Total Value</p>
-          <p className="text-2xl font-bold text-gray-900">
-            {formatCurrency(stats.totalValue || 0)}
-          </p>
-        </div>
-        <div className="bg-white rounded-lg shadow p-4">
-          <p className="text-sm font-medium text-gray-600">Avg Deal Size</p>
-          <p className="text-2xl font-bold text-gray-900">
-            {formatCurrency(stats.avgDealSize || 0)}
-          </p>
-        </div>
-        <div className="bg-white rounded-lg shadow p-4">
-          <p className="text-sm font-medium text-gray-600">Win Rate</p>
-          <p className="text-2xl font-bold text-gray-900">
-            {stats.totalDeals > 0 
-              ? Math.round(((deals.closed_won?.length || 0) / stats.totalDeals) * 100) 
-              : 0}%
-          </p>
-        </div>
-      </div>
+      </SectionErrorBoundary>
 
       {/* Kanban Board */}
-      <DndContext
+      <AsyncErrorBoundary operation="loading deals pipeline" size="large">
+        <DndContext
         sensors={sensors}
         collisionDetection={closestCenter}
         onDragStart={handleDragStart}
@@ -298,6 +312,7 @@ const KanbanBoard = () => {
           {activeId ? <DealCard deal={getActiveItem()} isDragging /> : null}
         </DragOverlay>
       </DndContext>
+      </AsyncErrorBoundary>
     </div>
   );
 };
