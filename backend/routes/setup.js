@@ -8,22 +8,77 @@ const router = express.Router();
 // POST /api/setup/database - Initialize complete database
 router.post('/database', async (req, res) => {
   try {
-    const { sequelize } = require('../models');
-    
-    // Drop all tables first
-    await sequelize.drop({ cascade: true });
-    console.log('🗑️ All tables dropped');
-    
-    // Now run the setup
     await setupDatabase();
     res.json({ 
       message: 'Database setup completed successfully',
-      note: 'All tables recreated and sample data added'
+      note: 'All tables created and sample data added'
     });
   } catch (error) {
     console.error('Database setup error:', error);
     res.status(500).json({ 
       error: 'Failed to setup database',
+      details: error.message 
+    });
+  }
+});
+
+// POST /api/setup/test - Test what tables exist
+router.post('/test', async (req, res) => {
+  try {
+    const { sequelize, User, Company, Contact, Deal, Task, Activity } = require('../models');
+    
+    const results = {};
+    
+    try {
+      results.userCount = await User.count();
+      results.users = 'EXISTS';
+    } catch (e) {
+      results.users = 'MISSING';
+    }
+    
+    try {
+      results.companyCount = await Company.count();
+      results.companies = 'EXISTS';
+    } catch (e) {
+      results.companies = 'MISSING';
+    }
+    
+    try {
+      results.contactCount = await Contact.count();
+      results.contacts = 'EXISTS';
+    } catch (e) {
+      results.contacts = 'MISSING';
+    }
+    
+    try {
+      results.dealCount = await Deal.count();
+      results.deals = 'EXISTS';
+    } catch (e) {
+      results.deals = 'MISSING';
+    }
+    
+    try {
+      results.taskCount = await Task.count();
+      results.tasks = 'EXISTS';
+    } catch (e) {
+      results.tasks = 'MISSING';
+    }
+    
+    try {
+      results.activityCount = await Activity.count();
+      results.activities = 'EXISTS';
+    } catch (e) {
+      results.activities = 'MISSING';
+    }
+    
+    res.json({ 
+      message: 'Table status check completed',
+      results
+    });
+  } catch (error) {
+    console.error('Test error:', error);
+    res.status(500).json({ 
+      error: 'Failed to test database',
       details: error.message 
     });
   }
