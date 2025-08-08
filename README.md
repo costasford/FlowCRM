@@ -2,7 +2,14 @@
 
 A modern, full-stack Customer Relationship Management system designed for property management professionals.
 
-**[🌟 Live Demo](https://costasford.github.io/FlowCRM)** - Try it now with no signup required!
+**[🌟 Live Demo](https://costasford.github.io/FlowCRM)** - Try it now with demo accounts!
+
+### 🔐 Demo Accounts
+| Role | Email | Password | Access Level |
+|------|--------|----------|-------------|
+| **Admin** | admin@flowcrm.com | admin123 | Full system access |
+| **Manager** | manager@flowcrm.com | manager123 | Property management |
+| **Agent** | agent@flowcrm.com | user123 | Standard user access |
 
 ## Features
 
@@ -14,16 +21,20 @@ A modern, full-stack Customer Relationship Management system designed for proper
 - **Activity Timeline** - Complete audit trail of all interactions
 
 ### 🔐 Security & Authentication
-- JWT-based authentication with role-based access control
-- Secure password hashing with bcrypt
-- Rate limiting and CORS protection
-- Input validation and SQL injection prevention
+- **HttpOnly Cookies** - Enterprise-grade XSS protection
+- **JWT Authentication** - Secure token-based auth with automatic refresh
+- **Role-based Access Control** - Admin, Manager, and User permissions
+- **Rate Limiting** - Protection against brute force attacks
+- **CORS Security** - Properly configured cross-origin resource sharing
+- **Input Validation** - Comprehensive data sanitization and validation
 
-### 📱 Modern User Experience  
-- Responsive design that works on desktop and mobile
-- Clean, professional interface with Tailwind CSS
-- Real-time updates and seamless navigation
-- Intuitive drag-and-drop deal management
+### 📱 Professional User Experience  
+- **Enterprise-grade Error Handling** - User-friendly error messages and recovery
+- **Real-time Connection Testing** - Automatic server connectivity verification
+- **Professional Loading States** - Smooth transitions and user feedback
+- **Responsive Design** - Works seamlessly on desktop, tablet, and mobile
+- **Intuitive Interface** - Clean, professional UI with Tailwind CSS
+- **Drag-and-Drop Pipeline** - Visual deal management with real-time updates
 
 ## Technology Stack
 
@@ -80,8 +91,8 @@ A modern, full-stack Customer Relationship Management system designed for proper
 
 4. **Access the Application**
    - Frontend: http://localhost:5173
-   - Backend API: http://localhost:5000
-   - Login with: admin@flowcrm.com / admin123
+   - Backend API: http://localhost:3001
+   - Login with demo accounts (see Demo Accounts section above)
 
 ## Production Deployment
 
@@ -105,7 +116,7 @@ FlowCRM is production-ready with automated deployment pipelines:
 - `GET|POST /api/tasks` - Task management
 - `GET|POST /api/activities` - Activity timeline
 
-All endpoints require JWT authentication via `Authorization: Bearer <token>` header.
+All endpoints use HttpOnly cookie authentication for enhanced security. CORS is properly configured for cross-origin requests.
 
 ## Contributing
 
