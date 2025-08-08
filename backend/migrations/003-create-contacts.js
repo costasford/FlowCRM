@@ -2,7 +2,7 @@
 
 module.exports = {
   up: async (queryInterface, Sequelize) => {
-    await queryInterface.createTable('Contacts', {
+    await queryInterface.createTable('contacts', {
       id: {
         allowNull: false,
         primaryKey: true,
@@ -71,15 +71,15 @@ module.exports = {
     });
 
     // Add indexes
-    await queryInterface.addIndex('Contacts', ['name']);
-    await queryInterface.addIndex('Contacts', ['email']);
-    await queryInterface.addIndex('Contacts', ['source']);
-    await queryInterface.addIndex('Contacts', ['isActive']);
-    await queryInterface.addIndex('Contacts', ['companyId']);
-    await queryInterface.addIndex('Contacts', ['lastContacted']);
+    await queryInterface.addIndex('contacts', ['name']);
+    await queryInterface.addIndex('contacts', ['email']);
+    await queryInterface.addIndex('contacts', ['source']);
+    await queryInterface.addIndex('contacts', ['isActive']);
+    await queryInterface.addIndex('contacts', ['companyId']);
+    await queryInterface.addIndex('contacts', ['lastContacted']);
   },
 
   down: async (queryInterface, Sequelize) => {
-    await queryInterface.dropTable('Contacts');
+    await queryInterface.dropTable('contacts');
   }
 };

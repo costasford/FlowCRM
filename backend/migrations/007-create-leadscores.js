@@ -2,7 +2,7 @@
 
 module.exports = {
   up: async (queryInterface, Sequelize) => {
-    await queryInterface.createTable('LeadScores', {
+    await queryInterface.createTable('leadscores', {
       id: {
         allowNull: false,
         primaryKey: true,
@@ -33,7 +33,7 @@ module.exports = {
         allowNull: false,
         unique: true,
         references: {
-          model: 'Contacts',
+          model: 'contacts',
           key: 'id'
         },
         onUpdate: 'CASCADE',
@@ -52,12 +52,12 @@ module.exports = {
     });
 
     // Add indexes
-    await queryInterface.addIndex('LeadScores', ['score']);
-    await queryInterface.addIndex('LeadScores', ['contactId'], { unique: true });
-    await queryInterface.addIndex('LeadScores', ['lastCalculated']);
+    await queryInterface.addIndex('leadscores', ['score']);
+    await queryInterface.addIndex('leadscores', ['contactId'], { unique: true });
+    await queryInterface.addIndex('leadscores', ['lastCalculated']);
   },
 
   down: async (queryInterface, Sequelize) => {
-    await queryInterface.dropTable('LeadScores');
+    await queryInterface.dropTable('leadscores');
   }
 };

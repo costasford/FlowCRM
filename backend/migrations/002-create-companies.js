@@ -2,7 +2,7 @@
 
 module.exports = {
   up: async (queryInterface, Sequelize) => {
-    await queryInterface.createTable('Companies', {
+    await queryInterface.createTable('companies', {
       id: {
         allowNull: false,
         primaryKey: true,
@@ -59,13 +59,13 @@ module.exports = {
     });
 
     // Add indexes
-    await queryInterface.addIndex('Companies', ['name']);
-    await queryInterface.addIndex('Companies', ['industry']);
-    await queryInterface.addIndex('Companies', ['size']);
-    await queryInterface.addIndex('Companies', ['isActive']);
+    await queryInterface.addIndex('companies', ['name']);
+    await queryInterface.addIndex('companies', ['industry']);
+    await queryInterface.addIndex('companies', ['size']);
+    await queryInterface.addIndex('companies', ['isActive']);
   },
 
   down: async (queryInterface, Sequelize) => {
-    await queryInterface.dropTable('Companies');
+    await queryInterface.dropTable('companies');
   }
 };

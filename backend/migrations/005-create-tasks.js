@@ -2,7 +2,7 @@
 
 module.exports = {
   up: async (queryInterface, Sequelize) => {
-    await queryInterface.createTable('Tasks', {
+    await queryInterface.createTable('tasks', {
       id: {
         allowNull: false,
         primaryKey: true,
@@ -57,7 +57,7 @@ module.exports = {
         type: Sequelize.UUID,
         allowNull: true,
         references: {
-          model: 'Contacts',
+          model: 'contacts',
           key: 'id'
         },
         onUpdate: 'CASCADE',
@@ -67,7 +67,7 @@ module.exports = {
         type: Sequelize.UUID,
         allowNull: true,
         references: {
-          model: 'Deals',
+          model: 'deals',
           key: 'id'
         },
         onUpdate: 'CASCADE',
@@ -86,15 +86,15 @@ module.exports = {
     });
 
     // Add indexes
-    await queryInterface.addIndex('Tasks', ['status']);
-    await queryInterface.addIndex('Tasks', ['priority']);
-    await queryInterface.addIndex('Tasks', ['assignedUserId']);
-    await queryInterface.addIndex('Tasks', ['contactId']);
-    await queryInterface.addIndex('Tasks', ['dealId']);
-    await queryInterface.addIndex('Tasks', ['dueDate']);
+    await queryInterface.addIndex('tasks', ['status']);
+    await queryInterface.addIndex('tasks', ['priority']);
+    await queryInterface.addIndex('tasks', ['assignedUserId']);
+    await queryInterface.addIndex('tasks', ['contactId']);
+    await queryInterface.addIndex('tasks', ['dealId']);
+    await queryInterface.addIndex('tasks', ['dueDate']);
   },
 
   down: async (queryInterface, Sequelize) => {
-    await queryInterface.dropTable('Tasks');
+    await queryInterface.dropTable('tasks');
   }
 };
