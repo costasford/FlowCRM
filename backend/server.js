@@ -1,23 +1,33 @@
 require('dotenv').config();
 
 // Validate critical environment variables
-const requiredEnvVars = [
-  'JWT_SECRET',
-  'DB_NAME',
-  'DB_USER',
-  'DB_PASSWORD'
-];
-
 console.log('Validating environment variables...');
-const missingVars = requiredEnvVars.filter(varName => !process.env[varName]);
 
-if (missingVars.length > 0) {
-  console.error('❌ Missing required environment variables:');
-  missingVars.forEach(varName => {
-    console.error(`   - ${varName}`);
-  });
-  console.error('Please check your .env file and ensure all required variables are set.');
+// Check JWT Secret (always required)
+if (!process.env.JWT_SECRET) {
+  console.error('❌ Missing required JWT_SECRET environment variable');
   process.exit(1);
+}
+
+// For production, we use DATABASE_URL instead of individual DB vars
+if (process.env.NODE_ENV === 'production') {
+  if (!process.env.DATABASE_URL) {
+    console.error('❌ Missing required DATABASE_URL environment variable for production');
+    process.exit(1);
+  }
+} else {
+  // For development, check individual DB vars
+  const requiredEnvVars = ['DB_NAME', 'DB_USER', 'DB_PASSWORD'];
+  const missingVars = requiredEnvVars.filter(varName => !process.env[varName]);
+  
+  if (missingVars.length > 0) {
+    console.error('❌ Missing required environment variables:');
+    missingVars.forEach(varName => {
+      console.error(`   - ${varName}`);
+    });
+    console.error('Please check your .env file and ensure all required variables are set.');
+    process.exit(1);
+  }
 }
 
 // Validate JWT secret strength
