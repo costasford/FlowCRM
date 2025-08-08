@@ -4,12 +4,21 @@ A modern, full-stack Customer Relationship Management system designed for proper
 
 **[🌟 Live Demo](https://costasford.github.io/FlowCRM)** - Try it now with demo accounts!
 
-### 🔐 Demo Accounts
+### 🔐 Demo Account
+| Email | Password | Access Level |
+|--------|----------|-------------|
+| demo@flowcrm.com | password123 | Standard user access |
+
+<details>
+<summary>Additional Test Accounts (Development Only)</summary>
+
 | Role | Email | Password | Access Level |
 |------|--------|----------|-------------|
 | **Admin** | admin@flowcrm.com | admin123 | Full system access |
 | **Manager** | manager@flowcrm.com | manager123 | Property management |
 | **Agent** | agent@flowcrm.com | user123 | Standard user access |
+
+</details>
 
 ## Features
 

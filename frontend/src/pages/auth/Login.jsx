@@ -141,11 +141,10 @@ const Login = () => {
           {/* Demo credentials for showcase */}
           <div className="text-center">
             <div className="bg-blue-50 border border-blue-200 text-blue-700 px-4 py-3 rounded-lg">
-              <p className="font-semibold mb-2">Demo Accounts:</p>
-              <div className="text-sm space-y-1">
-                <p><strong>Admin:</strong> admin@flowcrm.com / admin123</p>
-                <p><strong>Manager:</strong> manager@flowcrm.com / manager123</p>
-                <p><strong>User:</strong> agent@flowcrm.com / user123</p>
+              <p className="font-semibold mb-2">Try Demo Account:</p>
+              <div className="text-sm">
+                <p><strong>Email:</strong> demo@flowcrm.com</p>
+                <p><strong>Password:</strong> password123</p>
               </div>
             </div>
           </div>

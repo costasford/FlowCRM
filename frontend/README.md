@@ -6,10 +6,9 @@ Modern React frontend for the FlowCRM property management system.
 
 **[https://costasford.github.io/FlowCRM](https://costasford.github.io/FlowCRM)**
 
-### Demo Accounts
-- **Admin**: admin@flowcrm.com / admin123
-- **Manager**: manager@flowcrm.com / manager123  
-- **Agent**: agent@flowcrm.com / user123
+### Demo Account
+- **Email**: demo@flowcrm.com
+- **Password**: password123
 
 ## 🛠️ Technology Stack
 
