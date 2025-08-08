@@ -150,16 +150,6 @@ const Login = () => {
             </button>
           </div>
 
-          {/* Demo credentials for showcase */}
-          <div className="text-center">
-            <div className="bg-blue-50 border border-blue-200 text-blue-700 px-4 py-3 rounded-lg">
-              <p className="font-semibold mb-2">Try Demo Account:</p>
-              <div className="text-sm">
-                <p><strong>Email:</strong> demo@flowcrm.com</p>
-                <p><strong>Password:</strong> password123</p>
-              </div>
-            </div>
-          </div>
         </form>
       </div>
     </div>

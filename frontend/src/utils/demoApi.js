@@ -41,6 +41,11 @@ export const demoAuthAPI = {
   getCurrentUser: async () => {
     await delay(200);
     return { user: demoUser };
+  },
+  
+  logout: async () => {
+    await delay(200);
+    return true;
   }
 };
 

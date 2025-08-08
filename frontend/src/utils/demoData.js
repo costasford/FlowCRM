@@ -364,7 +364,7 @@ export const demoActivities = [
 
 // Demo mode detection
 export const isDemoMode = () => {
-  // Only use demo mode when explicitly enabled
-  // Now that we have a real backend, GitHub Pages uses the real API
-  return import.meta.env.VITE_DEMO_MODE === 'true';
+  // Use demo mode when explicitly enabled OR when running on GitHub Pages
+  return import.meta.env.VITE_DEMO_MODE === 'true' || 
+         window.location.hostname === 'costasford.github.io';
 };

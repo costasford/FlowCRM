@@ -1,16 +1,5 @@
 import axios from 'axios';
 import { tokenStorage } from './tokenStorage';
-import { 
-  isDemoMode,
-  demoAuthAPI,
-  demoCompaniesAPI,
-  demoContactsAPI,
-  demoDealsAPI,
-  demoTasksAPI,
-  demoActivitiesAPI,
-  demoUsersAPI,
-  demoLeadScoresAPI
-} from './demoApi';
 
 const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:3001/api';
 
@@ -87,17 +76,7 @@ api.interceptors.response.use(
   }
 );
 
-// Smart API layer - automatically switches between demo and real APIs
-const createSmartAPI = (realAPI, demoAPI) => {
-  return new Proxy(realAPI, {
-    get: (target, prop) => {
-      if (isDemoMode()) {
-        return demoAPI[prop] || target[prop];
-      }
-      return target[prop];
-    }
-  });
-};
+// Direct API exports - no demo mode switching
 
 // Connection test utility for fetch-based requests
 export const testConnection = async () => {
@@ -132,15 +111,15 @@ export const testConnection = async () => {
   }
 };
 
-// Real API implementations
-const realAuthAPI = {
+// API implementations
+export const authAPI = {
   login: (email, password) => api.post('/auth/login', { email, password }),
   register: (name, email, password) => api.post('/auth/register', { name, email, password }),
   getCurrentUser: () => api.get('/users/me'),
   testConnection,
 };
 
-const realUsersAPI = {
+export const usersAPI = {
   getAll: (params) => api.get('/users', { params }),
   getById: (id) => api.get(`/users/${id}`),
   create: (userData) => api.post('/users', userData),
@@ -150,7 +129,7 @@ const realUsersAPI = {
   delete: (id) => api.delete(`/users/${id}`),
 };
 
-const realCompaniesAPI = {
+export const companiesAPI = {
   getAll: (params) => api.get('/companies', { params }),
   getById: (id) => api.get(`/companies/${id}`),
   create: (companyData) => api.post('/companies', companyData),
@@ -158,7 +137,7 @@ const realCompaniesAPI = {
   delete: (id) => api.delete(`/companies/${id}`),
 };
 
-const realContactsAPI = {
+export const contactsAPI = {
   getAll: (params) => api.get('/contacts', { params }),
   getById: (id) => api.get(`/contacts/${id}`),
   create: (contactData) => api.post('/contacts', contactData),
@@ -167,7 +146,7 @@ const realContactsAPI = {
   getLeadScores: () => api.get('/contacts/lead-scores'),
 };
 
-const realDealsAPI = {
+export const dealsAPI = {
   getAll: (params) => api.get('/deals', { params }),
   getById: (id) => api.get(`/deals/${id}`),
   create: (dealData) => api.post('/deals', dealData),
@@ -177,7 +156,7 @@ const realDealsAPI = {
   getPipeline: () => api.get('/deals/pipeline'),
 };
 
-const realTasksAPI = {
+export const tasksAPI = {
   getAll: (params) => api.get('/tasks', { params }),
   getById: (id) => api.get(`/tasks/${id}`),
   create: (taskData) => api.post('/tasks', taskData),
@@ -187,7 +166,7 @@ const realTasksAPI = {
   getDashboard: () => api.get('/tasks/dashboard'),
 };
 
-const realActivitiesAPI = {
+export const activitiesAPI = {
   getAll: (params) => api.get('/activities', { params }),
   getById: (id) => api.get(`/activities/${id}`),
   create: (activityData) => api.post('/activities', activityData),
@@ -196,7 +175,7 @@ const realActivitiesAPI = {
   getTimeline: (params) => api.get('/activities/timeline', { params }),
 };
 
-const realLeadScoresAPI = {
+export const leadScoresAPI = {
   getAll: (params) => api.get('/leadscores', { params }),
   getById: (id) => api.get(`/leadscores/${id}`),
   getByContact: (contactId) => api.get(`/leadscores/contact/${contactId}`),
@@ -207,15 +186,5 @@ const realLeadScoresAPI = {
   getAnalytics: () => api.get('/leadscores/analytics'),
   delete: (id) => api.delete(`/leadscores/${id}`),
 };
-
-// Export smart APIs that automatically switch between demo and real
-export const authAPI = createSmartAPI(realAuthAPI, demoAuthAPI);
-export const usersAPI = createSmartAPI(realUsersAPI, demoUsersAPI);
-export const companiesAPI = createSmartAPI(realCompaniesAPI, demoCompaniesAPI);
-export const contactsAPI = createSmartAPI(realContactsAPI, demoContactsAPI);
-export const dealsAPI = createSmartAPI(realDealsAPI, demoDealsAPI);
-export const tasksAPI = createSmartAPI(realTasksAPI, demoTasksAPI);
-export const activitiesAPI = createSmartAPI(realActivitiesAPI, demoActivitiesAPI);
-export const leadScoresAPI = createSmartAPI(realLeadScoresAPI, demoLeadScoresAPI);
 
 export default api;
