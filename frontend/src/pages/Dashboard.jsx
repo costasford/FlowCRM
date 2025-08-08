@@ -12,9 +12,6 @@ import {
   PhoneIcon,
   EnvelopeIcon,
   ChatBubbleLeftIcon,
-  TrendingUpIcon,
-  ArrowUpIcon,
-  ArrowDownIcon,
 } from '@heroicons/react/24/outline';
 
 const Dashboard = () => {

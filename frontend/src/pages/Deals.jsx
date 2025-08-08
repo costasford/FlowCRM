@@ -201,8 +201,8 @@ const Deals = () => {
           onClose={() => setShowNewDealModal(false)}
           onSuccess={() => {
             setShowNewDealModal(false);
-            // Refresh the kanban board
-            window.location.reload();
+            // Refresh the deals list
+            fetchDeals();
           }}
         />
       )}

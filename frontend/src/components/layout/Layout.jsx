@@ -15,12 +15,12 @@ import {
 } from '@heroicons/react/24/outline';
 
 const navigation = [
-  { name: 'Dashboard', href: '/', icon: HomeIcon },
-  { name: 'Contacts', href: '/contacts', icon: UsersIcon },
-  { name: 'Companies', href: '/companies', icon: BuildingOfficeIcon },
-  { name: 'Deals', href: '/deals', icon: CurrencyDollarIcon },
-  { name: 'Tasks', href: '/tasks', icon: ClipboardDocumentListIcon },
-  { name: 'Activities', href: '/activities', icon: ClockIcon },
+  { name: 'Dashboard', to: '/', icon: HomeIcon },
+  { name: 'Contacts', to: '/contacts', icon: UsersIcon },
+  { name: 'Companies', to: '/companies', icon: BuildingOfficeIcon },
+  { name: 'Deals', to: '/deals', icon: CurrencyDollarIcon },
+  { name: 'Tasks', to: '/tasks', icon: ClipboardDocumentListIcon },
+  { name: 'Activities', to: '/activities', icon: ClockIcon },
 ];
 
 const Layout = () => {
@@ -53,11 +53,11 @@ const Layout = () => {
             <nav className="mt-5 px-2 space-y-1">
               {navigation.map((item) => {
                 const Icon = item.icon;
-                const isActive = location.pathname === item.href;
+                const isActive = location.pathname === item.to;
                 return (
                   <Link
                     key={item.name}
-                    to={item.href}
+                    to={item.to}
                     className={`group flex items-center px-2 py-2 text-base font-medium rounded-md ${
                       isActive
                         ? 'bg-blue-100 text-blue-900'
@@ -86,11 +86,11 @@ const Layout = () => {
               <nav className="mt-5 flex-1 px-2 space-y-1">
                 {navigation.map((item) => {
                   const Icon = item.icon;
-                  const isActive = location.pathname === item.href;
+                  const isActive = location.pathname === item.to;
                   return (
                     <Link
                       key={item.name}
-                      to={item.href}
+                      to={item.to}
                       className={`group flex items-center px-2 py-2 text-sm font-medium rounded-md ${
                         isActive
                           ? 'bg-blue-100 text-blue-900'
