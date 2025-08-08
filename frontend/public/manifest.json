@@ -1,0 +1,16 @@
+{
+  "name": "FlowCRM - Property Management CRM",
+  "short_name": "FlowCRM",
+  "description": "Professional property management CRM system",
+  "start_url": "/FlowCRM/",
+  "display": "standalone",
+  "background_color": "#f9fafb",
+  "theme_color": "#3b82f6",
+  "icons": [
+    {
+      "src": "/FlowCRM/favicon.ico",
+      "sizes": "any",
+      "type": "image/x-icon"
+    }
+  ]
+}

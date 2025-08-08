@@ -4,19 +4,22 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>FlowCRM - Property Management CRM</title>
+    <link rel="manifest" href="/FlowCRM/manifest.json" />
+    <link rel="icon" href="/FlowCRM/favicon.ico" />
     
-    <!-- GitHub Pages SPA redirect script -->
+    <!-- GitHub Pages SPA redirect restoration -->
     <script type="text/javascript">
-      (function(l) {
-        if (l.search[1] === '/' ) {
-          var decoded = l.search.slice(1).split('&').map(function(s) { 
-            return s.replace(/~and~/g, '&')
-          }).join('?');
-          window.history.replaceState(null, null,
-              l.pathname.slice(0, -1) + decoded + l.hash
-          );
+      (function() {
+        // Restore the path from sessionStorage (set by 404.html)
+        var redirect = sessionStorage.getItem('spa_redirect');
+        if (redirect) {
+          sessionStorage.removeItem('spa_redirect');
+          // Only redirect if it's not the current path
+          if (redirect !== window.location.pathname + window.location.search + window.location.hash) {
+            window.history.replaceState(null, null, redirect);
+          }
         }
-      }(window.location))
+      })();
     </script>
   </head>
   <body>

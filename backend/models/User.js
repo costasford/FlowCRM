@@ -10,10 +10,12 @@ module.exports = (sequelize, DataTypes) => {
       });
     }
 
-    // Instance method to get user without password
+    // Instance method to get user without sensitive data
     toJSON() {
       const values = { ...this.get() };
       delete values.passwordHash;
+      delete values.passwordResetToken;
+      delete values.passwordResetTokenExpires;
       return values;
     }
   }
@@ -46,7 +48,7 @@ module.exports = (sequelize, DataTypes) => {
       allowNull: false
     },
     role: {
-      type: DataTypes.ENUM('admin', 'manager', 'user'),
+      type: DataTypes.ENUM('admin', 'manager', 'agent', 'user'),
       defaultValue: 'user',
       allowNull: false
     },
@@ -55,6 +57,14 @@ module.exports = (sequelize, DataTypes) => {
       defaultValue: true
     },
     lastLoginAt: {
+      type: DataTypes.DATE,
+      allowNull: true
+    },
+    passwordResetToken: {
+      type: DataTypes.STRING,
+      allowNull: true
+    },
+    passwordResetTokenExpires: {
       type: DataTypes.DATE,
       allowNull: true
     }

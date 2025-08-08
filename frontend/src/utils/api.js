@@ -123,8 +123,10 @@ export const testConnection = async () => {
 // API implementations
 export const authAPI = {
   login: (email, password) => api.post('/auth/login', { email, password }),
-  register: (name, email, password) => api.post('/auth/register', { name, email, password }),
+  register: (userData) => api.post('/auth/register', userData),
   getCurrentUser: () => api.get('/auth/me'),
+  forgotPassword: (email) => api.post('/auth/forgot-password', { email }),
+  resetPassword: (token, password) => api.post('/auth/reset-password', { token, password }),
   testConnection,
 };
 

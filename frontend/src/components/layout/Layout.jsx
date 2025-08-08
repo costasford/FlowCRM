@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Outlet, Link, useLocation } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
 import {
@@ -12,6 +12,8 @@ import {
   XMarkIcon,
   ArrowRightOnRectangleIcon,
   UserCircleIcon,
+  Cog6ToothIcon,
+  ChevronUpDownIcon,
 } from '@heroicons/react/24/outline';
 
 const navigation = [
@@ -25,12 +27,26 @@ const navigation = [
 
 const Layout = () => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [profileDropdownOpen, setProfileDropdownOpen] = useState(false);
   const { user, logout } = useAuth();
   const location = useLocation();
+  const profileRef = useRef(null);
 
   const handleLogout = () => {
     logout();
   };
+
+  // Close dropdown when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (profileRef.current && !profileRef.current.contains(event.target)) {
+        setProfileDropdownOpen(false);
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
 
   return (
     <div className="min-h-screen bg-gray-50 flex">
@@ -107,21 +123,51 @@ const Layout = () => {
             
             {/* User info */}
             <div className="flex-shrink-0 flex border-t border-gray-200 p-4">
-              <div className="flex items-center w-full">
-                <div>
-                  <UserCircleIcon className="inline-block h-8 w-8 text-gray-400" />
-                </div>
-                <div className="ml-3 flex-1">
-                  <p className="text-sm font-medium text-gray-900">{user?.name}</p>
-                  <p className="text-xs text-gray-500 capitalize">{user?.role}</p>
-                </div>
+              <div className="relative w-full" ref={profileRef}>
                 <button
-                  onClick={handleLogout}
-                  className="ml-3 p-1 text-gray-400 hover:text-gray-600"
-                  title="Logout"
+                  onClick={() => setProfileDropdownOpen(!profileDropdownOpen)}
+                  className="flex items-center w-full text-left hover:bg-gray-50 rounded-lg p-2 transition-colors"
                 >
-                  <ArrowRightOnRectangleIcon className="h-5 w-5" />
+                  <div>
+                    <UserCircleIcon className="inline-block h-8 w-8 text-gray-400" />
+                  </div>
+                  <div className="ml-3 flex-1">
+                    <p className="text-sm font-medium text-gray-900">{user?.name}</p>
+                    <p className="text-xs text-gray-500 capitalize">{user?.role}</p>
+                  </div>
+                  <ChevronUpDownIcon className="h-4 w-4 text-gray-400" />
                 </button>
+
+                {/* Profile Dropdown */}
+                {profileDropdownOpen && (
+                  <div className="absolute bottom-full left-0 right-0 mb-2 bg-white border border-gray-200 rounded-lg shadow-lg py-2 z-50">
+                    <div className="px-3 py-2 border-b border-gray-100">
+                      <p className="text-sm font-medium text-gray-900">{user?.name}</p>
+                      <p className="text-xs text-gray-500">{user?.email}</p>
+                    </div>
+                    <button
+                      onClick={() => {
+                        setProfileDropdownOpen(false);
+                        // You can add profile settings functionality here
+                        alert('Profile settings coming soon!');
+                      }}
+                      className="flex items-center w-full px-3 py-2 text-sm text-gray-700 hover:bg-gray-50"
+                    >
+                      <Cog6ToothIcon className="h-4 w-4 mr-2" />
+                      Profile Settings
+                    </button>
+                    <button
+                      onClick={() => {
+                        setProfileDropdownOpen(false);
+                        handleLogout();
+                      }}
+                      className="flex items-center w-full px-3 py-2 text-sm text-red-700 hover:bg-red-50"
+                    >
+                      <ArrowRightOnRectangleIcon className="h-4 w-4 mr-2" />
+                      Sign Out
+                    </button>
+                  </div>
+                )}
               </div>
             </div>
           </div>
@@ -139,13 +185,45 @@ const Layout = () => {
             <Bars3Icon className="h-6 w-6" />
           </button>
           <h1 className="text-xl font-semibold text-blue-600">FlowCRM</h1>
-          <button
-            onClick={handleLogout}
-            className="text-gray-400 hover:text-gray-600"
-            title="Logout"
-          >
-            <ArrowRightOnRectangleIcon className="h-6 w-6" />
-          </button>
+          <div className="relative">
+            <button
+              onClick={() => setProfileDropdownOpen(!profileDropdownOpen)}
+              className="text-gray-400 hover:text-gray-600"
+              title="Profile Menu"
+            >
+              <UserCircleIcon className="h-6 w-6" />
+            </button>
+
+            {/* Mobile Profile Dropdown */}
+            {profileDropdownOpen && (
+              <div className="absolute right-0 top-full mt-2 w-64 bg-white border border-gray-200 rounded-lg shadow-lg py-2 z-50">
+                <div className="px-3 py-2 border-b border-gray-100">
+                  <p className="text-sm font-medium text-gray-900">{user?.name}</p>
+                  <p className="text-xs text-gray-500">{user?.email}</p>
+                </div>
+                <button
+                  onClick={() => {
+                    setProfileDropdownOpen(false);
+                    alert('Profile settings coming soon!');
+                  }}
+                  className="flex items-center w-full px-3 py-2 text-sm text-gray-700 hover:bg-gray-50"
+                >
+                  <Cog6ToothIcon className="h-4 w-4 mr-2" />
+                  Profile Settings
+                </button>
+                <button
+                  onClick={() => {
+                    setProfileDropdownOpen(false);
+                    handleLogout();
+                  }}
+                  className="flex items-center w-full px-3 py-2 text-sm text-red-700 hover:bg-red-50"
+                >
+                  <ArrowRightOnRectangleIcon className="h-4 w-4 mr-2" />
+                  Sign Out
+                </button>
+              </div>
+            )}
+          </div>
         </div>
 
         {/* Page content */}

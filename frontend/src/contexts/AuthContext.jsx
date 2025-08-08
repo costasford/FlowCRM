@@ -56,19 +56,14 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
-  const logout = async () => {
-    tokenStorage.removeToken();
-    setUser(null);
-  };
-
-  const register = async (name, email, password) => {
+  const register = async (userData) => {
     try {
-      const response = await authAPI.register(name, email, password);
-      const { token, user: userData } = response;
+      const response = await authAPI.register(userData);
+      const { token, user: newUser } = response;
       
       // Store token in localStorage
       tokenStorage.setToken(token);
-      setUser(userData);
+      setUser(newUser);
       
       return { success: true };
     } catch (error) {
@@ -78,6 +73,11 @@ export const AuthProvider = ({ children }) => {
         error: error.userMessage || 'Registration failed. Please try again.' 
       };
     }
+  };
+
+  const logout = async () => {
+    tokenStorage.removeToken();
+    setUser(null);
   };
 
   const value = {
