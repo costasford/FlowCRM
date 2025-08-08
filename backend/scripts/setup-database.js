@@ -8,14 +8,21 @@ async function setupDatabase() {
     await sequelize.authenticate();
     console.log('✅ Database connection established');
     
-    // Create tables without forcing (safer approach)
-    try {
-      await sequelize.sync({ force: false, alter: false });
-      console.log('✅ Database tables synchronized');
-    } catch (syncError) {
-      console.log('⚠️ Sync failed, trying with alter=true:', syncError.message);
-      await sequelize.sync({ force: false, alter: true });
-      console.log('✅ Database tables synchronized with alter');
+    // Create each model individually to handle errors gracefully
+    const models = [User, Company, Contact, Deal, Task, Activity, LeadScore];
+    
+    for (const Model of models) {
+      try {
+        await Model.sync({ force: false, alter: false });
+        console.log(`✅ ${Model.name} table ready`);
+      } catch (error) {
+        if (error.message.includes('already exists')) {
+          console.log(`⚠️ ${Model.name} table already exists, skipping...`);
+        } else {
+          console.log(`❌ Error with ${Model.name} table:`, error.message);
+          throw error;
+        }
+      }
     }
     
     // Check if admin user exists
