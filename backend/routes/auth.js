@@ -176,8 +176,13 @@ router.post('/login', loginValidation, async (req, res) => {
 // GET /api/auth/me - Get current user profile
 router.get('/me', async (req, res) => {
   try {
-    const authHeader = req.headers.authorization;
-    const token = authHeader && authHeader.split(' ')[1];
+    // Try to get token from cookie first, then fallback to Authorization header
+    let token = req.cookies?.authToken;
+    
+    if (!token) {
+      const authHeader = req.headers.authorization;
+      token = authHeader && authHeader.split(' ')[1]; // Bearer TOKEN
+    }
 
     if (!token) {
       return res.status(401).json({
