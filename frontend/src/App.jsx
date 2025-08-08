@@ -14,7 +14,7 @@ import ProtectedRoute from './components/auth/ProtectedRoute';
 function App() {
   return (
     <AuthProvider>
-      <Router>
+      <Router basename="/FlowCRM">
         <Routes>
           {/* Public routes */}
           <Route path="/login" element={<Login />} />
