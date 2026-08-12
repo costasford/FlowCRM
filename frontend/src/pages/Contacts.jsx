@@ -69,8 +69,8 @@ const Contacts = () => {
       
       const response = await contactsAPI.getAll(params);
       setContacts(response.contacts || []);
-      setTotalContacts(response.total || 0);
-      setCurrentPage(response.page || 1);
+      setTotalContacts(response.pagination?.totalCount || 0);
+      setCurrentPage(response.pagination?.currentPage || 1);
     } catch (error) {
       console.error('Failed to fetch contacts:', error);
     } finally {
