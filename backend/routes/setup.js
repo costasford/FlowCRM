@@ -2,7 +2,14 @@ const express = require('express');
 const bcrypt = require('bcryptjs');
 const { User } = require('../models');
 const { setupDatabase } = require('../scripts/setup-database');
+const { authenticateToken, requireAdmin } = require('../middleware/auth');
 const router = express.Router();
+
+// These are one-time bootstrapping tools superseded by `npm run seed` for
+// normal setup. Require an authenticated admin so they can't be hit by
+// anonymous requests to spam sample data or (on a database with no admin
+// yet) create an account with a well-known default password.
+router.use(authenticateToken, requireAdmin);
 
 // One-time setup endpoint to create admin user
 // POST /api/setup/database - Initialize complete database

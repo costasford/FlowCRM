@@ -4,7 +4,7 @@ export default {
   moduleNameMapper: {
     '\\.(css|less|scss|sass)$': 'identity-obj-proxy',
     '^@/(.*)$': '<rootDir>/src/$1',
-    '^../utils/api$': '<rootDir>/src/__mocks__/api.js'
+    '^(\\.\\./)+utils/api$': '<rootDir>/src/__mocks__/api.js'
   },
   transform: {
     '^.+\\.(js|jsx|ts|tsx)$': ['babel-jest', {

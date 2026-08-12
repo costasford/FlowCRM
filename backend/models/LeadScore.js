@@ -35,7 +35,7 @@ module.exports = (sequelize, DataTypes) => {
         max: 100
       }
     },
-    lastUpdated: {
+    lastCalculated: {
       type: DataTypes.DATE,
       allowNull: false,
       defaultValue: DataTypes.NOW
@@ -45,39 +45,11 @@ module.exports = (sequelize, DataTypes) => {
       allowNull: true,
       defaultValue: {},
       comment: 'JSON object containing scoring factors and their values'
-    },
-    engagementScore: {
-      type: DataTypes.INTEGER,
-      allowNull: true,
-      validate: {
-        min: 0,
-        max: 100
-      }
-    },
-    demographicScore: {
-      type: DataTypes.INTEGER,
-      allowNull: true,
-      validate: {
-        min: 0,
-        max: 100
-      }
-    },
-    behaviorScore: {
-      type: DataTypes.INTEGER,
-      allowNull: true,
-      validate: {
-        min: 0,
-        max: 100
-      }
-    },
-    grade: {
-      type: DataTypes.ENUM('A', 'B', 'C', 'D', 'F'),
-      allowNull: true
     }
   }, {
     sequelize,
     modelName: 'LeadScore',
-    tableName: 'lead_scores',
+    tableName: 'leadscores',
     timestamps: true,
     indexes: [
       {
@@ -88,10 +60,7 @@ module.exports = (sequelize, DataTypes) => {
         fields: ['score']
       },
       {
-        fields: ['grade']
-      },
-      {
-        fields: ['lastUpdated']
+        fields: ['lastCalculated']
       }
     ]
   });

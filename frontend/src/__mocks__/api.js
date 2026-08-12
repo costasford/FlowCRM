@@ -12,6 +12,7 @@ export const tasksAPI = {
   create: jest.fn(() => Promise.resolve({ data: {} })),
   update: jest.fn(() => Promise.resolve({ data: {} })),
   delete: jest.fn(() => Promise.resolve()),
+  getDashboard: jest.fn(() => Promise.resolve({ stats: {}, recentTasks: [] })),
 };
 
 export const dealsAPI = {
@@ -19,6 +20,7 @@ export const dealsAPI = {
   create: jest.fn(() => Promise.resolve({ data: {} })),
   update: jest.fn(() => Promise.resolve({ data: {} })),
   delete: jest.fn(() => Promise.resolve()),
+  getPipeline: jest.fn(() => Promise.resolve({ stats: {}, pipeline: [] })),
 };
 
 export const contactsAPI = {
@@ -33,6 +35,7 @@ export const activitiesAPI = {
   create: jest.fn(() => Promise.resolve({ data: {} })),
   update: jest.fn(() => Promise.resolve({ data: {} })),
   delete: jest.fn(() => Promise.resolve()),
+  getTimeline: jest.fn(() => Promise.resolve({ activities: [] })),
 };
 
 export const companiesAPI = {

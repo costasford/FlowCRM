@@ -154,7 +154,6 @@ export const contactsAPI = {
   create: (contactData) => api.post('/contacts', contactData),
   update: (id, contactData) => api.put(`/contacts/${id}`, contactData),
   delete: (id) => api.delete(`/contacts/${id}`),
-  getLeadScores: () => api.get('/contacts/lead-scores'),
 };
 
 export const dealsAPI = {

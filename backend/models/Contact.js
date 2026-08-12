@@ -69,7 +69,7 @@ module.exports = (sequelize, DataTypes) => {
       allowNull: false
     },
     source: {
-      type: DataTypes.ENUM('website', 'referral', 'social_media', 'cold_call', 'email_campaign', 'trade_show', 'other'),
+      type: DataTypes.ENUM('website', 'referral', 'social_media', 'cold_outreach', 'event', 'advertisement', 'other'),
       allowNull: true,
       defaultValue: 'other'
     },

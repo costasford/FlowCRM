@@ -73,15 +73,17 @@ describe('DateInput', () => {
 
   test('shows calendar icon and opens date picker on click', async () => {
     const user = userEvent.setup();
-    render(<DateInput {...defaultProps} />);
-    
+    const { container } = render(<DateInput {...defaultProps} />);
+
     const calendarButton = screen.getByLabelText('Open date picker');
     expect(calendarButton).toBeInTheDocument();
-    
+
     await user.click(calendarButton);
-    
-    // Check if HTML5 date picker is rendered
-    expect(screen.getByDisplayValue('')).toBeInTheDocument();
+
+    // Check if HTML5 date picker is rendered. Query by type rather than
+    // display value - the visible text input is also empty at this point,
+    // so getByDisplayValue('') would ambiguously match both.
+    expect(container.querySelector('input[type="date"]')).toBeInTheDocument();
   });
 
   test('prevents non-numeric and non-slash characters', async () => {

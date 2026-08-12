@@ -13,8 +13,15 @@ describe('AccessibleModal', () => {
 
   beforeEach(() => {
     jest.clearAllMocks();
-    // Mock focus method
-    HTMLElement.prototype.focus = jest.fn();
+    // Mock focus method. Current jsdom defines `focus` as a getter-only
+    // accessor, which breaks both direct assignment and jest.spyOn (which
+    // also can't wrap a setter-less accessor). Redefine the property
+    // outright as a plain writable data property instead.
+    Object.defineProperty(HTMLElement.prototype, 'focus', {
+      configurable: true,
+      writable: true,
+      value: jest.fn(),
+    });
   });
 
   test('renders when isOpen is true', () => {
@@ -67,19 +74,20 @@ describe('AccessibleModal', () => {
   test('calls onClose when backdrop is clicked and closeOnBackdropClick is true', async () => {
     const user = userEvent.setup();
     render(<AccessibleModal {...defaultProps} closeOnBackdropClick={true} />);
-    
-    // Click on the backdrop (the outer div)
-    const backdrop = screen.getByRole('dialog').parentElement;
+
+    // Click on the backdrop (has the onClick handler; it's a child of the
+    // dialog-role element, not its parent)
+    const backdrop = screen.getByTestId('modal-backdrop');
     await user.click(backdrop);
-    
+
     expect(defaultProps.onClose).toHaveBeenCalled();
   });
 
   test('does not close when backdrop is clicked and closeOnBackdropClick is false', async () => {
     const user = userEvent.setup();
     render(<AccessibleModal {...defaultProps} closeOnBackdropClick={false} />);
-    
-    const backdrop = screen.getByRole('dialog').parentElement;
+
+    const backdrop = screen.getByTestId('modal-backdrop');
     await user.click(backdrop);
     
     expect(defaultProps.onClose).not.toHaveBeenCalled();
@@ -94,26 +102,27 @@ describe('AccessibleModal', () => {
   });
 
   test('applies correct size classes', () => {
+    // The size class lands on the inner panel, not the dialog-role
+    // wrapper (which only handles positioning/overlay).
     const { rerender } = render(<AccessibleModal {...defaultProps} size="sm" />);
-    expect(screen.getByRole('dialog')).toHaveClass('sm:max-w-md');
-    
+    expect(screen.getByTestId('modal-panel')).toHaveClass('sm:max-w-md');
+
     rerender(<AccessibleModal {...defaultProps} size="lg" />);
-    expect(screen.getByRole('dialog')).toHaveClass('sm:max-w-2xl');
-    
+    expect(screen.getByTestId('modal-panel')).toHaveClass('sm:max-w-2xl');
+
     rerender(<AccessibleModal {...defaultProps} size="xl" />);
-    expect(screen.getByRole('dialog')).toHaveClass('sm:max-w-4xl');
+    expect(screen.getByTestId('modal-panel')).toHaveClass('sm:max-w-4xl');
   });
 
   test('prevents body scroll when modal is open', () => {
     const originalOverflow = document.body.style.overflow;
-    
-    render(<AccessibleModal {...defaultProps} />);
+
+    const { unmount } = render(<AccessibleModal {...defaultProps} />);
     expect(document.body.style.overflow).toBe('hidden');
-    
-    // Cleanup should restore overflow
-    return () => {
-      expect(document.body.style.overflow).toBe(originalOverflow);
-    };
+
+    // Unmounting should restore the original overflow value
+    unmount();
+    expect(document.body.style.overflow).toBe(originalOverflow);
   });
 
   test('traps focus within modal', async () => {

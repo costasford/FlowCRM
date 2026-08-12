@@ -50,12 +50,15 @@ describe('useSearch', () => {
   });
 
   test('should combine search and filters', () => {
-    const { result } = renderHook(() => 
+    const { result } = renderHook(() =>
       useSearch(sampleData, { searchFields, filters })
     );
 
     act(() => {
-      result.current.setSearchTerm('john');
+      // 'john' alone also matches "Bob Johnson" (see the search-term test
+      // above); search by email here so only John Doe matches, isolating
+      // the AND-combination behavior this test is actually about.
+      result.current.setSearchTerm('john@example');
       result.current.setFilter('status', 'active');
     });
 
@@ -87,7 +90,7 @@ describe('useSearch', () => {
     );
 
     act(() => {
-      result.current.setSearchTerm('john');
+      result.current.setSearchTerm('john@example');
       result.current.setFilter('status', 'active');
     });
 

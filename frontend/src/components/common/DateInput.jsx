@@ -17,12 +17,24 @@ const DateInput = ({
   const inputRef = useRef(null);
   const hiddenInputRef = useRef(null);
 
+  // Parse a date string as local time, not UTC. `new Date('2024-12-25')`
+  // parses date-only strings as UTC midnight, which then reads back one
+  // day earlier via local getters in any negative-UTC-offset timezone.
+  const parseAsLocalDate = (dateString) => {
+    const dateOnlyMatch = /^(\d{4})-(\d{2})-(\d{2})$/.exec(dateString);
+    if (dateOnlyMatch) {
+      const [, year, month, day] = dateOnlyMatch;
+      return new Date(Number(year), Number(month) - 1, Number(day));
+    }
+    return new Date(dateString);
+  };
+
   // Format date for display (MM/DD/YYYY)
   const formatDateForDisplay = (dateString) => {
     if (!dateString) return '';
-    const date = new Date(dateString);
+    const date = parseAsLocalDate(dateString);
     if (isNaN(date.getTime())) return dateString; // Return as-is if invalid
-    
+
     // Format as MM/DD/YYYY
     const month = (date.getMonth() + 1).toString().padStart(2, '0');
     const day = date.getDate().toString().padStart(2, '0');
@@ -33,9 +45,9 @@ const DateInput = ({
   // Format date for HTML date input (YYYY-MM-DD)
   const formatDateForInput = (dateString) => {
     if (!dateString) return '';
-    const date = new Date(dateString);
+    const date = parseAsLocalDate(dateString);
     if (isNaN(date.getTime())) return '';
-    
+
     // Format as YYYY-MM-DD for HTML input
     const year = date.getFullYear();
     const month = (date.getMonth() + 1).toString().padStart(2, '0');
@@ -78,9 +90,14 @@ const DateInput = ({
       }
     }
     
-    // Return ISO date string if valid
+    // Return ISO date string if valid (format from local getters, not
+    // toISOString(), which converts to UTC and can shift the date by a
+    // day in positive-UTC-offset timezones)
     if (date && !isNaN(date.getTime())) {
-      return date.toISOString().split('T')[0];
+      const year = date.getFullYear();
+      const month = (date.getMonth() + 1).toString().padStart(2, '0');
+      const day = date.getDate().toString().padStart(2, '0');
+      return `${year}-${month}-${day}`;
     }
     
     return '';
