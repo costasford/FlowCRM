@@ -6,7 +6,7 @@ module.exports = {
   up: async (queryInterface, Sequelize) => {
     // First, get the company IDs from the database
     const companies = await queryInterface.sequelize.query(
-      `SELECT id, name FROM "Companies" WHERE name IN (
+      `SELECT id, name FROM "companies" WHERE name IN (
         'Sunset Apartments Complex',
         'Downtown Office Tower', 
         'Maplewood Condominiums',

@@ -64,7 +64,7 @@ module.exports = {
         id: uuidv4(),
         name: 'Greenfield Industrial Park',
         industry: 'Industrial Property Management',
-        size: '101-500',
+        size: '201-500',
         location: 'Oakland, CA',
         phone: '(555) 345-6789',
         revenue: 4500000.00,

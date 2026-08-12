@@ -7,7 +7,7 @@ module.exports = {
     // First, get the contact and company IDs from the database
     const [contacts, companies] = await Promise.all([
       queryInterface.sequelize.query(
-        `SELECT id, name FROM "Contacts" WHERE email IN (
+        `SELECT id, name FROM "contacts" WHERE email IN (
           'sarah.johnson@sunsetapts.com',
           'mchen@downtowntower.com', 
           'lisa.r@maplewood-condos.com',
@@ -18,7 +18,7 @@ module.exports = {
         { type: queryInterface.sequelize.QueryTypes.SELECT }
       ),
       queryInterface.sequelize.query(
-        `SELECT id, name FROM "Companies" WHERE name IN (
+        `SELECT id, name FROM "companies" WHERE name IN (
           'Sunset Apartments Complex',
           'Downtown Office Tower', 
           'Maplewood Condominiums',
