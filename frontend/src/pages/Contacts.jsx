@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { contactsAPI } from '../utils/api';
-import { PlusIcon, MagnifyingGlassIcon } from '@heroicons/react/24/outline';
+import { PlusIcon, MagnifyingGlassIcon, PencilIcon, TrashIcon } from '@heroicons/react/24/outline';
 import { usePermissions } from '../hooks/usePermissions';
 import PermissionGate, { PermissionButton } from '../components/common/PermissionGate';
 import { PERMISSIONS } from '../utils/permissions';
