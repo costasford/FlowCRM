@@ -195,11 +195,11 @@ module.exports = {
       }
     ];
 
-    await queryInterface.bulkInsert('Deals', deals, {});
+    await queryInterface.bulkInsert('deals', deals, {});
   },
 
   down: async (queryInterface, Sequelize) => {
-    await queryInterface.bulkDelete('Deals', {
+    await queryInterface.bulkDelete('deals', {
       title: {
         [Sequelize.Op.in]: [
           'Sunset Apartments - Comprehensive Maintenance Contract',

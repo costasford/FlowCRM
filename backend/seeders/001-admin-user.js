@@ -9,7 +9,7 @@ module.exports = {
     const hashedPassword = await bcrypt.hash('admin123', 12);
     const adminId = uuidv4();
     
-    await queryInterface.bulkInsert('Users', [{
+    await queryInterface.bulkInsert('users', [{
       id: adminId,
       name: 'FlowCRM Admin',
       email: 'admin@flowcrm.com',
@@ -24,7 +24,7 @@ module.exports = {
     const managerPassword = await bcrypt.hash('manager123', 12);
     const managerId = uuidv4();
 
-    await queryInterface.bulkInsert('Users', [{
+    await queryInterface.bulkInsert('users', [{
       id: managerId,
       name: 'Property Manager',
       email: 'manager@flowcrm.com',
@@ -39,7 +39,7 @@ module.exports = {
     const userPassword = await bcrypt.hash('user123', 12);
     const userId = uuidv4();
 
-    await queryInterface.bulkInsert('Users', [{
+    await queryInterface.bulkInsert('users', [{
       id: userId,
       name: 'Leasing Agent',
       email: 'agent@flowcrm.com',
@@ -57,7 +57,7 @@ module.exports = {
   },
 
   down: async (queryInterface, Sequelize) => {
-    await queryInterface.bulkDelete('Users', {
+    await queryInterface.bulkDelete('users', {
       email: {
         [Sequelize.Op.in]: ['admin@flowcrm.com', 'manager@flowcrm.com', 'agent@flowcrm.com']
       }
