@@ -84,7 +84,11 @@ app.use(cors({
 // Rate limiting
 const limiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 100, // limit each IP to 100 requests per windowMs
+  // 100 was too low for real interactive use - a single dashboard load
+  // alone fires 5+ requests, so normal browsing across a few pages
+  // exhausted this within a couple minutes for any visitor, not just
+  // heavy testing.
+  max: 500,
   message: 'Too many requests from this IP, please try again later.'
 });
 app.use('/api/', limiter);
