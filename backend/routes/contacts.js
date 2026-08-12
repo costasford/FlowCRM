@@ -107,7 +107,7 @@ router.get('/', [
         {
           model: LeadScore,
           as: 'leadScore',
-          attributes: ['score', 'grade']
+          attributes: ['score']
         }
       ],
       order: [['name', 'ASC']],
