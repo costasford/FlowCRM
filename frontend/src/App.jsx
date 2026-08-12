@@ -1,6 +1,7 @@
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider } from './contexts/AuthContext';
+import { ThemeProvider } from './contexts/ThemeContext';
 import { PageErrorBoundary } from './components/common/ErrorBoundary';
 import Layout from './components/layout/Layout';
 import Login from './pages/auth/Login';
@@ -17,6 +18,7 @@ import ProtectedRoute from './components/auth/ProtectedRoute';
 function App() {
   return (
     <PageErrorBoundary>
+      <ThemeProvider>
       <AuthProvider>
         <Router basename="/FlowCRM">
           <Routes>
@@ -48,6 +50,7 @@ function App() {
           </Routes>
         </Router>
       </AuthProvider>
+      </ThemeProvider>
     </PageErrorBoundary>
   );
 }
