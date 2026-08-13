@@ -3,5 +3,11 @@
 }
 
 {$API_DOMAIN} {
+	handle_path /leaderboard/* {
+		header Access-Control-Allow-Origin "https://costasford.github.io"
+		root * /srv/leaderboard
+		file_server
+	}
+
 	reverse_proxy backend:5000
 }
