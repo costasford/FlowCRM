@@ -9,5 +9,9 @@
 		file_server
 	}
 
+	handle /tag-request {
+		reverse_proxy tag-request-api:3001
+	}
+
 	reverse_proxy backend:5000
 }
