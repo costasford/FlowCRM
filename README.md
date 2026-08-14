@@ -22,10 +22,10 @@ This is a **production application** with real user registration and authenticat
 ### 🔐 Security & Authentication
 - **JWT Tokens** - Secure localStorage-based authentication for cross-domain support
 - **Bearer Token Authorization** - All API requests authenticated with JWT tokens
-- **Cross-Domain Compatible** - Frontend (GitHub Pages) + Backend (Railway) architecture
+- **Cross-Domain Compatible** - Frontend (GitHub Pages) + self-hosted backend architecture
 - **Role-based Access Control** - Admin, Manager, and User permissions
 - **Rate Limiting** - Protection against brute force attacks
-- **CORS Security** - Properly configured for GitHub Pages ↔ Railway communication
+- **CORS Security** - Properly configured for GitHub Pages ↔ self-hosted VPS communication
 - **Input Validation** - Comprehensive data sanitization and validation
 
 ### 📱 Professional User Experience  
@@ -116,7 +116,7 @@ git pull && docker compose up -d --build
 
 ### Architecture Notes
 - **Cross-domain authentication** handled via localStorage JWT tokens
-- **CORS configured** for GitHub Pages ↔ Railway communication  
+- **CORS configured** for GitHub Pages ↔ self-hosted VPS communication  
 - **No cookies** - avoids SameSite restrictions across domains
 - **Bearer token** authorization on all API requests
 
@@ -134,7 +134,7 @@ git pull && docker compose up -d --build
 - `GET|POST /api/tasks` - Task management
 - `GET|POST /api/activities` - Activity timeline
 
-All endpoints use **Bearer token authentication** with JWT tokens stored in localStorage. CORS is configured for GitHub Pages ↔ Railway cross-origin requests.
+All endpoints use **Bearer token authentication** with JWT tokens stored in localStorage. CORS is configured for GitHub Pages ↔ self-hosted VPS cross-origin requests.
 
 ## Contributing
 

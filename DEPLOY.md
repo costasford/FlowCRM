@@ -66,8 +66,8 @@ Should return `{"status":"OK", ...}`.
 
 ## 7. Point the frontend at the new API and redeploy to GitHub Pages
 
-Edit `frontend/package.json` - the `build:production` script currently
-targets the old Railway URL:
+Edit `frontend/package.json` so the `build:production` script points at
+your new API domain instead of wherever it targeted before:
 
 ```json
 "build:production": "set \"VITE_API_URL=https://api.yourdomain.com/api\" && vite build",
