@@ -6,7 +6,7 @@ Modern React frontend for the FlowCRM property management system.
 
 **[https://costasford.github.io/FlowCRM](https://costasford.github.io/FlowCRM)**
 
-This is a **production-ready CRM application** with real backend authentication. Register a new account or login with existing credentials to access the full system.
+This is a **production-ready CRM application** with real backend authentication. Click "Try Demo Account" for an instant pre-seeded login, or register a new account to start from scratch.
 
 ## 🛠️ Technology Stack
 
@@ -24,7 +24,7 @@ This is a **production-ready CRM application** with real backend authentication.
 - **Bearer Token Authorization** - All API requests include JWT token
 - **Protected Routes** - Route-level access control
 - **Context API** - Centralized auth state management
-- **Cross-Domain Support** - GitHub Pages ↔ Railway architecture
+- **Cross-Domain Support** - GitHub Pages ↔ self-hosted VPS architecture
 
 ### Professional Error Handling
 - **Connection Testing** - Real-time server connectivity verification
@@ -33,9 +33,9 @@ This is a **production-ready CRM application** with real backend authentication.
 - **Loading States** - Professional feedback for all operations
 
 ### Production API Layer
-- **Direct Backend Integration** - No demo mode, production-ready
+- **Direct Backend Integration** - Talks to the real production API (plus an optional "Try Demo Account" login for instant access)
 - **Comprehensive Error Mapping** - User-friendly error messages for all scenarios
-- **CORS Configuration** - GitHub Pages ↔ Railway cross-origin handling
+- **CORS Configuration** - GitHub Pages ↔ self-hosted VPS cross-origin handling
 - **Request Timeouts** - 10-second timeout for better UX
 - **JWT Token Injection** - Automatic Bearer token authorization
 
@@ -101,14 +101,14 @@ npm run deploy
 The build process automatically configures the correct API endpoints:
 
 - **Development**: http://localhost:3001/api
-- **Production**: https://flowcrm-production-1465.up.railway.app/api
+- **Production**: https://68.183.26.83.sslip.io/api
 
 ### Cross-Domain Architecture
 
 - **Frontend**: Hosted on GitHub Pages (`costasford.github.io`)
-- **Backend**: Hosted on Railway (`flowcrm-production-1465.up.railway.app`)
+- **Backend**: Self-hosted on a VPS (Docker Compose + Caddy), at `68.183.26.83.sslip.io`
 - **Authentication**: localStorage JWT tokens (cross-domain compatible)
-- **CORS**: Configured for GitHub Pages ↔ Railway communication
+- **CORS**: Configured for GitHub Pages ↔ self-hosted VPS communication
 
 ## 🎨 UI/UX Features
 
@@ -129,7 +129,7 @@ The build process automatically configures the correct API endpoints:
 ### Client-side Security
 - **localStorage JWT Authentication** - Cross-domain compatible tokens
 - **Bearer Token Authorization** - Secure API request headers
-- **CORS Compliance** - Proper GitHub Pages ↔ Railway handling
+- **CORS Compliance** - Proper GitHub Pages ↔ self-hosted VPS handling
 - **Input Sanitization** - Client-side validation
 - **Secure Route Protection** - Authentication-based navigation
 
@@ -159,7 +159,7 @@ FlowCRM frontend is fully responsive and tested on:
 ## 📚 API Integration
 
 ### Production API Layer
-The frontend integrates directly with the Railway backend:
+The frontend integrates directly with the self-hosted backend:
 
 ```javascript
 // Automatic JWT token injection
@@ -190,9 +190,9 @@ npm run deploy
 ```
 
 This builds the production version and deploys to GitHub Pages with:
-- **Production API URLs** - Railway backend integration
+- **Production API URLs** - Self-hosted backend integration
 - **Optimized assets** - Minified JS/CSS bundles
-- **Cross-domain CORS** - GitHub Pages ↔ Railway compatibility
+- **Cross-domain CORS** - GitHub Pages ↔ self-hosted VPS compatibility
 - **localStorage JWT** - Cross-domain authentication support
 
 ### Alternative Deployment Options

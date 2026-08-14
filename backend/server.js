@@ -62,7 +62,7 @@ const setupRoutes = require('./routes/setup');
 const app = express();
 const PORT = process.env.PORT || 5000;
 
-// Trust proxy for Railway deployment
+// Trust the Caddy reverse proxy in front of this container for correct client IPs
 app.set('trust proxy', 1);
 
 // Security middleware

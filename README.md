@@ -5,13 +5,10 @@ A modern, full-stack Customer Relationship Management system designed for proper
 **[🌟 Live Demo](https://costasford.github.io/FlowCRM)** - Production-ready CRM with real backend!
 
 ### 🔐 Authentication
-This is a **production application** with real user registration and authentication. Create your account to get started:
+This is a **production application** with real user registration and authentication.
 
-1. Visit the [Live Demo](https://costasford.github.io/FlowCRM)
-2. Click "Register" to create a new account
-3. Login with your credentials to access the full CRM system
-
-**No demo accounts needed** - this is the real application ready for use!
+- **Fastest path**: click **"Try Demo Account"** on the login page for an instant, pre-seeded login (sample contacts, deals, and properties included).
+- **Or register your own account**: click "Register" on the [Live Demo](https://costasford.github.io/FlowCRM) to create a real account and start from scratch.
 
 ## Features
 
@@ -56,11 +53,11 @@ This is a **production application** with real user registration and authenticat
 - **JWT** - JSON Web Tokens for authentication
 
 ### Infrastructure & Deployment
-- **Railway** - Cloud platform for backend + PostgreSQL database
+- **Self-hosted VPS** - Backend, PostgreSQL, and a Caddy reverse proxy all run in Docker Compose on the same droplet
 - **GitHub Pages** - Frontend hosting with cross-domain authentication
 - **localStorage JWT** - Cross-domain compatible authentication strategy
-- **Automated CI/CD** - Deploy frontend via `npm run deploy`
-- **Database Migrations** - Automated schema management
+- **`npm run deploy`** - Builds and pushes the frontend to GitHub Pages
+- **Database Migrations** - Automated schema management via Sequelize
 
 ## Getting Started
 
@@ -104,17 +101,17 @@ This is a **production application** with real user registration and authenticat
 FlowCRM uses a **cross-domain architecture** optimized for production:
 
 - **Frontend**: GitHub Pages hosting at [https://costasford.github.io/FlowCRM](https://costasford.github.io/FlowCRM)
-- **Backend**: Railway hosting at `https://flowcrm-production-1465.up.railway.app`  
-- **Database**: Railway PostgreSQL with automated migrations
+- **Backend + Database**: Self-hosted on a VPS, both running in Docker Compose alongside a Caddy reverse proxy that terminates HTTPS
 - **Authentication**: localStorage JWT tokens for cross-domain compatibility
 
 ### Deployment Commands
 ```bash
 # Frontend deployment (from frontend/ directory)
-npm run build:production  # Builds with Railway API URL
-npm run deploy           # Deploys to GitHub Pages
+npm run build:production  # Builds with the production API URL baked in
+npm run deploy             # Deploys to GitHub Pages
 
-# Backend is auto-deployed to Railway on git push
+# Backend deployment (on the VPS)
+git pull && docker compose up -d --build
 ```
 
 ### Architecture Notes

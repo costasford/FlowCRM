@@ -9,8 +9,7 @@
     "migrate": "npx sequelize-cli db:migrate",
     "seed": "npx sequelize-cli db:seed:all",
     "reset-db": "npx sequelize-cli db:drop && npx sequelize-cli db:create && npm run migrate && npm run seed",
-    "build": "echo 'Build complete - migrations will run at startup'",
-    "railway:start": "npm start"
+    "build": "echo 'Build complete - migrations will run at startup'"
   },
   "dependencies": {
     "bcryptjs": "^2.4.3",
